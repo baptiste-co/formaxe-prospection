@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formaxe - Acquisition | Options</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="options-container">
+    <div class="options-header">
+      <img src="../images/logo.png" alt="Formaxe" class="options-logo">
+      <div>
+        <h1 class="options-title">Formaxe - Acquisition</h1>
+        <p class="options-subtitle">Configuration de l'extension</p>
+      </div>
+    </div>
+
+    <div class="options-body">
+      <div class="option-group">
+        <label class="option-label" for="webhook-url">URL du Webhook</label>
+        <p class="option-desc">L'URL vers laquelle les données des contacts seront envoyées (n8n, Zapier, Make, etc.)</p>
+        <input type="url" id="webhook-url" class="option-input" placeholder="https://votre-webhook-url.com/endpoint">
+      </div>
+
+      <button class="save-btn" id="save-btn">
+        Sauvegarder
+      </button>
+
+      <div class="feedback" id="feedback"></div>
+    </div>
+
+    <div class="options-footer">
+      <span>v1.0.0</span>
+      <span>Developed by Gripow</span>
+    </div>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>

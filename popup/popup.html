@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formaxe - Acquisition</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <div class="popup-header">
+      <img src="../images/logo.png" alt="Formaxe" class="popup-logo">
+      <h1 class="popup-title">Formaxe - Acquisition</h1>
+    </div>
+
+    <div class="popup-body">
+      <div class="popup-status" id="status-msg">
+        <span class="status-dot" id="status-dot"></span>
+        <span id="status-text">Vérification...</span>
+      </div>
+
+      <div class="popup-info">
+        <p>Cette extension détecte automatiquement les contacts sur <strong>Decidento</strong> et permet de les exporter via webhook.</p>
+      </div>
+
+      <div class="popup-stats" id="stats-section" style="display:none;">
+        <div class="stat-item">
+          <span class="stat-number" id="contacts-count">0</span>
+          <span class="stat-label">contacts détectés</span>
+        </div>
+      </div>
+
+      <button class="popup-btn" id="options-btn">
+        <svg viewBox="0 0 24 24" width="14" height="14"><path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87a.48.48 0 0 0 .12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z" fill="currentColor"/></svg>
+        Options
+      </button>
+    </div>
+
+    <div class="popup-footer">
+      <span class="footer-version">v1.0.0</span>
+      <span class="footer-dev">Developed by Gripow</span>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

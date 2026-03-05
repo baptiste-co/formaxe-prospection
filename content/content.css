@@ -1,0 +1,216 @@
+/* Formaxe - Acquisition | Content Script Styles */
+
+.formaxe-btn-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding: 6px 16px 10px 16px;
+  box-sizing: border-box;
+  background: transparent;
+}
+
+.formaxe-extract-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #54B6B4;
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(84, 182, 180, 0.3);
+}
+
+.formaxe-extract-btn:hover {
+  background-color: #07163C;
+  box-shadow: 0 2px 10px rgba(7, 22, 60, 0.3);
+  transform: translateY(-1px);
+}
+
+.formaxe-extract-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+/* Mini-form that unfolds under the contact */
+.formaxe-form-container {
+  display: none;
+  width: 100%;
+  background: #f8fbfc;
+  border-top: 2px solid #54B6B4;
+  padding: 14px 20px;
+  box-sizing: border-box;
+  animation: formaxeSlideDown 0.25s ease-out;
+}
+
+.formaxe-form-container.formaxe-visible {
+  display: block;
+}
+
+@keyframes formaxeSlideDown {
+  from { opacity: 0; max-height: 0; padding-top: 0; padding-bottom: 0; }
+  to { opacity: 1; max-height: 300px; padding-top: 14px; padding-bottom: 14px; }
+}
+
+.formaxe-form-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.formaxe-form-logo {
+  height: 20px;
+  width: auto;
+}
+
+.formaxe-form-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #07163C;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.formaxe-form-contact-summary {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.formaxe-form-contact-summary strong {
+  color: #07163C;
+}
+
+.formaxe-form-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.formaxe-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 160px;
+}
+
+.formaxe-form-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #07163C;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.formaxe-form-select {
+  padding: 7px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #07163C;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  appearance: auto;
+}
+
+.formaxe-form-select:focus {
+  border-color: #54B6B4;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(84, 182, 180, 0.2);
+}
+
+.formaxe-send-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #07163C;
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  align-self: flex-end;
+  margin-top: 2px;
+}
+
+.formaxe-send-btn:hover {
+  background-color: #54B6B4;
+  box-shadow: 0 2px 10px rgba(84, 182, 180, 0.4);
+}
+
+.formaxe-send-btn:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
+
+.formaxe-send-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+/* Success / Error feedback */
+.formaxe-feedback {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin-top: 8px;
+  display: none;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.formaxe-feedback.formaxe-success {
+  display: block;
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.formaxe-feedback.formaxe-error {
+  display: block;
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.formaxe-form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #e8e8e8;
+}
+
+.formaxe-form-version {
+  font-size: 9px;
+  color: #aaa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.formaxe-form-dev {
+  font-size: 9px;
+  color: #aaa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}

@@ -1,0 +1,134 @@
+/* Formaxe - Acquisition | Options Styles */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f5f7fa;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.options-container {
+  max-width: 560px;
+  width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.options-header {
+  background: linear-gradient(135deg, #07163C 0%, #0d2460 100%);
+  padding: 24px 30px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.options-logo {
+  height: 30px;
+  width: auto;
+  filter: brightness(10);
+}
+
+.options-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.options-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 2px;
+}
+
+.options-body {
+  padding: 30px;
+}
+
+.option-group {
+  margin-bottom: 20px;
+}
+
+.option-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #07163C;
+  margin-bottom: 4px;
+}
+
+.option-desc {
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 8px;
+}
+
+.option-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #333;
+  transition: border-color 0.2s;
+}
+
+.option-input:focus {
+  border-color: #54B6B4;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(84, 182, 180, 0.15);
+}
+
+.save-btn {
+  display: block;
+  width: 100%;
+  padding: 11px;
+  background: #54B6B4;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.save-btn:hover {
+  background: #07163C;
+}
+
+.feedback {
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  display: none;
+}
+
+.feedback.success {
+  display: block;
+  color: #155724;
+}
+
+.feedback.error {
+  display: block;
+  color: #721c24;
+}
+
+.options-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 30px;
+  background: #fafafa;
+  border-top: 1px solid #eee;
+  font-size: 10px;
+  color: #aaa;
+}

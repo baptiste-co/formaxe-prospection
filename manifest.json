@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "Formaxe - Acquisition",
+  "version": "1.0.0",
+  "description": "Extension d'acquisition de contacts depuis Decidento. Developed by Gripow.",
+  "author": "Gripow",
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://platform.decidento.com/*"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://platform.decidento.com/*"],
+      "js": ["content/content.js"],
+      "css": ["content/content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "options_page": "options/options.html",
+  "web_accessible_resources": [
+    {
+      "resources": ["images/logo.png"],
+      "matches": ["https://platform.decidento.com/*"]
+    }
+  ]
+}
