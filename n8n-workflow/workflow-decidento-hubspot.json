@@ -1,0 +1,367 @@
+{
+  "name": "[Formaxe] Decidento → HubSpot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "decidento",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "d1a1a1a1-0001-4000-8000-000000000001",
+      "name": "Webhook Decidento",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [250, 300],
+      "webhookId": "100c15f6-3a8a-4d5f-9e70-b27011d1c1aa"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Préparer les données du webhook\nconst body = $input.first().json.body;\nconst contact = body.contact || {};\nconst company = body.company || {};\n\n// Séparer prénom / nom\nconst nameParts = (contact.name || '').trim().split(/\\s+/);\nconst lastname = nameParts.pop() || '';\nconst firstname = nameParts.join(' ') || '';\n\n// Mapper le statut vers la valeur enum HubSpot\nconst statusMap = {\n  'Message vocal laissé': 'message_vocal_laisse',\n  'Email envoyé': 'email_envoye',\n  'Injoignable': 'injoignable',\n  'Rendez-vous pris': 'rendez_vous_pris',\n  'Ne plus rappeler': 'ne_plus_rappeler',\n  'Déjà appelé': 'deja_appele',\n  'Pas intéressé': 'pas_interesse',\n  'Déjà en partenariat': 'deja_en_partenariat',\n  'A raccroché': 'a_raccroche'\n};\n\n// Mapper le commercial vers la valeur enum HubSpot\nconst commercialMap = {\n  'Baptiste Cordier': 'baptiste_cordier',\n  'Louis Prezeau': 'louis_prezeau'\n};\n\nreturn [{\n  json: {\n    contact_firstname: firstname,\n    contact_lastname: lastname,\n    contact_email: contact.email || '',\n    contact_position: contact.position || '',\n    contact_title_tag: contact.title_tag || '',\n    contact_linkedin: contact.linkedin_url || '',\n    contact_address: contact.address || '',\n    company_name: company.name || '',\n    company_address: company.address || '',\n    company_phone: company.phone || '',\n    company_website: company.website || '',\n    siren: company.siren || '',\n    siret: company.siret || '',\n    type_entreprise: company.type_entreprise || '',\n    effectif: company.effectif || '',\n    chiffre_affaires: company.chiffre_affaires || '',\n    capital_social: company.capital_social || '',\n    forme_juridique: company.forme_juridique || '',\n    numero_tva: company.numero_tva || '',\n    convention_collective: company.convention_collective || '',\n    status_raw: body.status || '',\n    status_enum: statusMap[body.status] || body.status || '',\n    commercial_raw: body.commercial || '',\n    commercial_enum: commercialMap[body.commercial] || body.commercial || '',\n    source_url: body.source_url || '',\n    timestamp: body.timestamp || new Date().toISOString(),\n    decidento_contact_id: body.decidento_contact_id || ''\n  }\n}];"
+      },
+      "id": "d1a1a1a1-0002-4000-8000-000000000002",
+      "name": "Préparer les données",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [470, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.hubapi.com/crm/v3/owners",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "limit", "value": "100" }
+          ]
+        },
+        "options": {
+          "response": { "response": { "fullResponse": true } }
+        }
+      },
+      "id": "d1a1a1a1-0012-4000-8000-000000000012",
+      "name": "Chercher owners HubSpot",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [690, 300],
+      "credentials": {
+        "hubspotOAuth2Api": { "id": "u2JYQLBBKAkG4wic", "name": "Formaxe" }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Résoudre le owner ID dynamiquement depuis la liste des owners HubSpot\nconst data = $('Préparer les données').first().json;\nconst ownersResponse = $('Chercher owners HubSpot').first().json;\nconst owners = (ownersResponse.body && ownersResponse.body.results) || [];\nconst commercialName = data.commercial_raw || '';\n\n// Chercher le owner par nom (prénom + nom)\nlet ownerId = '';\nif (commercialName) {\n  const normalizedSearch = commercialName.toLowerCase().trim();\n  const match = owners.find(o => {\n    const fullName = ((o.firstName || '') + ' ' + (o.lastName || '')).toLowerCase().trim();\n    return fullName === normalizedSearch;\n  });\n  if (match) {\n    ownerId = match.id || '';\n  }\n}\n\nreturn [{\n  json: {\n    ...data,\n    owner_id: ownerId\n  }\n}];"
+      },
+      "id": "d1a1a1a1-0013-4000-8000-000000000013",
+      "name": "Résoudre owner ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [910, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/companies/search",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ filterGroups: [{ filters: [{ propertyName: 'siren', operator: 'EQ', value: $json.siren }] }], properties: ['name', 'siren'], limit: 1 }) }}",
+        "options": {
+          "response": { "response": { "fullResponse": true } }
+        }
+      },
+      "id": "d1a1a1a1-0003-4000-8000-000000000003",
+      "name": "Chercher entreprise par SIREN",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1130, 300],
+      "credentials": {
+        "hubspotOAuth2Api": { "id": "u2JYQLBBKAkG4wic", "name": "Formaxe" }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "check-total",
+              "leftValue": "={{ $json.body.total }}",
+              "rightValue": 0,
+              "operator": { "type": "number", "operation": "gt" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d1a1a1a1-0004-4000-8000-000000000004",
+      "name": "Entreprise existe ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1350, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "cid-existing", "name": "company_id", "value": "={{ $json.body.results[0].id }}", "type": "string" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d1a1a1a1-0005-4000-8000-000000000005",
+      "name": "ID entreprise existante",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1570, 180]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/companies",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ (() => { const d = $('Résoudre owner ID').item.json; const props = { name: d.company_name, phone: d.company_phone, website: d.company_website, address: d.company_address, siren: d.siren, siret_siege: d.siret, type_entreprise: d.type_entreprise, numero_tva: d.numero_tva, capital_social: d.capital_social, forme_juridique: d.forme_juridique, ca_decidento: d.chiffre_affaires, effectif_decidento: d.effectif, convention_collective: d.convention_collective, source_decidento_url: d.source_url }; if (d.owner_id) props.hubspot_owner_id = d.owner_id; return JSON.stringify({ properties: props }); })() }}",
+        "options": {
+          "response": { "response": { "fullResponse": true } }
+        }
+      },
+      "id": "d1a1a1a1-0006-4000-8000-000000000006",
+      "name": "Créer entreprise",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1570, 420],
+      "credentials": {
+        "hubspotOAuth2Api": { "id": "u2JYQLBBKAkG4wic", "name": "Formaxe" }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "cid-new", "name": "company_id", "value": "={{ $json.body.id }}", "type": "string" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d1a1a1a1-0007-4000-8000-000000000007",
+      "name": "ID nouvelle entreprise",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1790, 420]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Merge : récupérer le company_id quel que soit le chemin (existante ou nouvelle)\nconst data = $('Résoudre owner ID').first().json;\n\nlet companyId = '';\ntry { companyId = $('ID entreprise existante').first().json.company_id; } catch(e) {}\nif (!companyId) {\n  try { companyId = $('ID nouvelle entreprise').first().json.company_id; } catch(e) {}\n}\n\nreturn [{ json: { ...data, company_id: companyId } }];"
+      },
+      "id": "d1a1a1a1-0008-4000-8000-000000000008",
+      "name": "Fusionner company_id",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2010, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/contacts/search",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ filterGroups: [{ filters: [{ propertyName: 'decidento_contact_id', operator: 'EQ', value: $json.decidento_contact_id }] }], properties: ['firstname', 'lastname', 'decidento_contact_id', 'statut_prospection_decidento'], limit: 1 }) }}",
+        "options": {
+          "response": { "response": { "fullResponse": true } }
+        }
+      },
+      "id": "d1a1a1a1-0020-4000-8000-000000000020",
+      "name": "Chercher contact existant",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2230, 300],
+      "credentials": {
+        "hubspotOAuth2Api": { "id": "u2JYQLBBKAkG4wic", "name": "Formaxe" }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "check-contact-total",
+              "leftValue": "={{ $json.body.total }}",
+              "rightValue": 0,
+              "operator": { "type": "number", "operation": "gt" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d1a1a1a1-0021-4000-8000-000000000021",
+      "name": "Contact existe ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [2450, 300]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ 'https://api.hubapi.com/crm/v3/objects/contacts/' + $json.body.results[0].id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ (() => { const d = $('Fusionner company_id').first().json; const props = { firstname: d.contact_firstname, lastname: d.contact_lastname, jobtitle: d.contact_position, address: d.contact_address, titre_decidento: d.contact_title_tag, statut_prospection_decidento: d.status_enum, commercial_decidento: d.commercial_enum, source_decidento_url: d.source_url, decidento_contact_id: d.decidento_contact_id }; if (d.contact_email) props.email = d.contact_email; if (d.contact_linkedin) props.hs_linkedin_url = d.contact_linkedin; if (d.owner_id) props.hubspot_owner_id = d.owner_id; return JSON.stringify({ properties: props }); })() }}",
+        "options": {
+          "response": { "response": { "fullResponse": true } }
+        }
+      },
+      "id": "d1a1a1a1-0022-4000-8000-000000000022",
+      "name": "Mettre à jour contact",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2670, 180],
+      "credentials": {
+        "hubspotOAuth2Api": { "id": "u2JYQLBBKAkG4wic", "name": "Formaxe" }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/contacts",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ (() => { const d = $('Fusionner company_id').first().json; const props = { firstname: d.contact_firstname, lastname: d.contact_lastname, jobtitle: d.contact_position, address: d.contact_address, titre_decidento: d.contact_title_tag, statut_prospection_decidento: d.status_enum, commercial_decidento: d.commercial_enum, source_decidento_url: d.source_url, decidento_contact_id: d.decidento_contact_id }; if (d.contact_email) props.email = d.contact_email; if (d.contact_linkedin) props.hs_linkedin_url = d.contact_linkedin; if (d.owner_id) props.hubspot_owner_id = d.owner_id; return JSON.stringify({ properties: props }); })() }}",
+        "options": {
+          "response": { "response": { "fullResponse": true } }
+        }
+      },
+      "id": "d1a1a1a1-0023-4000-8000-000000000023",
+      "name": "Créer contact HubSpot",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2670, 420],
+      "credentials": {
+        "hubspotOAuth2Api": { "id": "u2JYQLBBKAkG4wic", "name": "Formaxe" }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Récupérer le contact_id quel que soit le chemin (update ou create)\nconst data = $('Fusionner company_id').first().json;\n\nlet contactId = '';\nlet action = '';\ntry {\n  contactId = $('Mettre à jour contact').first().json.body.id;\n  action = 'updated';\n} catch(e) {}\nif (!contactId) {\n  try {\n    contactId = $('Créer contact HubSpot').first().json.body.id;\n    action = 'created';\n  } catch(e) {}\n}\n\nreturn [{ json: { ...data, contact_id: contactId, contact_action: action } }];"
+      },
+      "id": "d1a1a1a1-0024-4000-8000-000000000024",
+      "name": "Fusionner contact_id",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2890, 300]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ 'https://api.hubapi.com/crm/v4/objects/contacts/' + $json.contact_id + '/associations/companies/' + $json.company_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "[{\"associationCategory\": \"HUBSPOT_DEFINED\", \"associationTypeId\": 279}]",
+        "options": {
+          "response": { "response": { "fullResponse": true } }
+        }
+      },
+      "id": "d1a1a1a1-0010-4000-8000-000000000010",
+      "name": "Associer contact ↔ entreprise",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [3110, 300],
+      "credentials": {
+        "hubspotOAuth2Api": { "id": "u2JYQLBBKAkG4wic", "name": "Formaxe" }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, contact_id: $('Fusionner contact_id').first().json.contact_id, contact_action: $('Fusionner contact_id').first().json.contact_action, company_id: $('Fusionner contact_id').first().json.company_id, owner_id: $('Résoudre owner ID').first().json.owner_id || 'non trouvé', message: $('Fusionner contact_id').first().json.contact_action === 'updated' ? 'Contact mis à jour et entreprise associée' : 'Contact et entreprise créés/associés avec succès' }) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "d1a1a1a1-0011-4000-8000-000000000011",
+      "name": "Répondre succès",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [3330, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Decidento": {
+      "main": [[{ "node": "Préparer les données", "type": "main", "index": 0 }]]
+    },
+    "Préparer les données": {
+      "main": [[{ "node": "Chercher owners HubSpot", "type": "main", "index": 0 }]]
+    },
+    "Chercher owners HubSpot": {
+      "main": [[{ "node": "Résoudre owner ID", "type": "main", "index": 0 }]]
+    },
+    "Résoudre owner ID": {
+      "main": [[{ "node": "Chercher entreprise par SIREN", "type": "main", "index": 0 }]]
+    },
+    "Chercher entreprise par SIREN": {
+      "main": [[{ "node": "Entreprise existe ?", "type": "main", "index": 0 }]]
+    },
+    "Entreprise existe ?": {
+      "main": [
+        [{ "node": "ID entreprise existante", "type": "main", "index": 0 }],
+        [{ "node": "Créer entreprise", "type": "main", "index": 0 }]
+      ]
+    },
+    "ID entreprise existante": {
+      "main": [[{ "node": "Fusionner company_id", "type": "main", "index": 0 }]]
+    },
+    "Créer entreprise": {
+      "main": [[{ "node": "ID nouvelle entreprise", "type": "main", "index": 0 }]]
+    },
+    "ID nouvelle entreprise": {
+      "main": [[{ "node": "Fusionner company_id", "type": "main", "index": 0 }]]
+    },
+    "Fusionner company_id": {
+      "main": [[{ "node": "Chercher contact existant", "type": "main", "index": 0 }]]
+    },
+    "Chercher contact existant": {
+      "main": [[{ "node": "Contact existe ?", "type": "main", "index": 0 }]]
+    },
+    "Contact existe ?": {
+      "main": [
+        [{ "node": "Mettre à jour contact", "type": "main", "index": 0 }],
+        [{ "node": "Créer contact HubSpot", "type": "main", "index": 0 }]
+      ]
+    },
+    "Mettre à jour contact": {
+      "main": [[{ "node": "Fusionner contact_id", "type": "main", "index": 0 }]]
+    },
+    "Créer contact HubSpot": {
+      "main": [[{ "node": "Fusionner contact_id", "type": "main", "index": 0 }]]
+    },
+    "Fusionner contact_id": {
+      "main": [[{ "node": "Associer contact ↔ entreprise", "type": "main", "index": 0 }]]
+    },
+    "Associer contact ↔ entreprise": {
+      "main": [[{ "node": "Répondre succès", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

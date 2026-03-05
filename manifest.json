@@ -9,8 +9,12 @@
     "activeTab"
   ],
   "host_permissions": [
-    "https://platform.decidento.com/*"
+    "https://platform.decidento.com/*",
+    "https://*.n8n.cloud/*"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {

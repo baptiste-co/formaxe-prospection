@@ -1,0 +1,80 @@
+{
+  "name": "[Formaxe] Check Contact",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "formaxe-check",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "c1a1a1a1-0001-4000-8000-000000000001",
+      "name": "Webhook Check",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [250, 300],
+      "webhookId": "eb63760e-f78e-4b0f-9499-5c7a37e4c995"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/contacts/search",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ filterGroups: [{ filters: [{ propertyName: 'decidento_contact_id', operator: 'EQ', value: $json.body.decidento_contact_id }] }], properties: ['firstname', 'lastname', 'statut_prospection_decidento', 'commercial_decidento', 'hubspot_owner_id', 'createdate', 'lastmodifieddate', 'decidento_contact_id'], limit: 1 }) }}",
+        "options": {
+          "response": { "response": { "fullResponse": true } }
+        }
+      },
+      "id": "c1a1a1a1-0002-4000-8000-000000000002",
+      "name": "Chercher contact HubSpot",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [470, 300],
+      "credentials": {
+        "hubspotOAuth2Api": { "id": "u2JYQLBBKAkG4wic", "name": "Formaxe" }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Construire la réponse pour l'extension\nconst searchResult = $('Chercher contact HubSpot').first().json;\nconst total = searchResult.body?.total || 0;\n\nif (total > 0) {\n  const contact = searchResult.body.results[0];\n  const props = contact.properties || {};\n\n  // Mapper les valeurs enum vers des labels lisibles\n  const statusLabels = {\n    'message_vocal_laisse': 'Message vocal laissé',\n    'email_envoye': 'Email envoyé',\n    'injoignable': 'Injoignable',\n    'rendez_vous_pris': 'Rendez-vous pris',\n    'ne_plus_rappeler': 'Ne plus rappeler',\n    'deja_appele': 'Déjà appelé',\n    'pas_interesse': 'Pas intéressé',\n    'deja_en_partenariat': 'Déjà en partenariat',\n    'a_raccroche': 'A raccroché'\n  };\n\n  return [{\n    json: {\n      exists: true,\n      contact_id: contact.id,\n      firstname: props.firstname || '',\n      lastname: props.lastname || '',\n      last_status: statusLabels[props.statut_prospection_decidento] || props.statut_prospection_decidento || '',\n      last_date: props.lastmodifieddate || props.createdate || '',\n      commercial: props.commercial_decidento || '',\n      owner_id: props.hubspot_owner_id || ''\n    }\n  }];\n} else {\n  return [{\n    json: {\n      exists: false\n    }\n  }];\n}"
+      },
+      "id": "c1a1a1a1-0003-4000-8000-000000000003",
+      "name": "Préparer réponse",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [690, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "c1a1a1a1-0004-4000-8000-000000000004",
+      "name": "Répondre",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [910, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Check": {
+      "main": [[{ "node": "Chercher contact HubSpot", "type": "main", "index": 0 }]]
+    },
+    "Chercher contact HubSpot": {
+      "main": [[{ "node": "Préparer réponse", "type": "main", "index": 0 }]]
+    },
+    "Préparer réponse": {
+      "main": [[{ "node": "Répondre", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -1,44 +1,64 @@
 # Formaxe - Acquisition
 
-**Chrome Extension** pour l'extraction et l'export de contacts depuis la plateforme [Decidento](https://platform.decidento.com).
+**Chrome Extension** pour l'extraction, l'envoi et le suivi de contacts depuis [Decidento](https://platform.decidento.com) vers [HubSpot CRM](https://www.hubspot.com).
 
 ![Version](https://img.shields.io/badge/version-1.0.0-54B6B4)
-![Chrome](https://img.shields.io/badge/chrome-extension-07163C)
+![Chrome](https://img.shields.io/badge/chrome-manifest_v3-07163C)
+![HubSpot](https://img.shields.io/badge/CRM-HubSpot-ff7a59)
 
 ---
 
 ## Description
 
-Formaxe - Acquisition est une extension Chrome qui s'intègre directement dans les pages de contacts de Decidento. Elle permet aux commerciaux de :
+Formaxe - Acquisition s'intègre directement dans les pages de contacts de Decidento et permet aux commerciaux de :
 
-- Extraire les informations d'un contact (nom, poste, adresse, titre, LinkedIn, email)
-- Extraire les informations de l'entreprise associée (nom, adresse, téléphone, site web)
-- Sélectionner un statut d'appel et le nom du commercial
-- Envoyer les données vers un webhook (n8n, Zapier, Make, etc.)
+- **Extraire** les informations d'un contact et de son entreprise en un clic
+- **Envoyer** les données vers HubSpot CRM via des webhooks n8n
+- **Créer ou mettre à jour** automatiquement les contacts et entreprises (upsert par `decidento_contact_id` / SIREN)
+- **Assigner** automatiquement le commercial sélectionné comme propriétaire HubSpot
+- **Visualiser** le statut de prospection de chaque contact directement dans Decidento (badge vert)
+
+## Architecture
+
+```
+Decidento (Chrome Extension)
+    │
+    ├─── POST /webhook/decidento ──► n8n Cloud ──► HubSpot CRM
+    │    (envoi contact + entreprise)      (upsert contact, find/create company, associate)
+    │
+    └─── POST /webhook/formaxe-check ──► n8n Cloud ──► HubSpot CRM
+         (vérification statut)              (search by decidento_contact_id)
+```
 
 ## Installation
 
 ### Mode développeur (Chrome)
 
-1. Ouvrir Chrome et naviguer vers `chrome://extensions/`
-2. Activer le **Mode développeur** (en haut à droite)
-3. Cliquer sur **Charger l'extension non empaquetée**
-4. Sélectionner le dossier `formaxe-acquisition/`
-5. L'extension apparaît dans la barre d'outils Chrome
+1. Télécharger et décompresser le ZIP de l'extension
+2. Ouvrir Chrome → `chrome://extensions/`
+3. Activer le **Mode développeur** (en haut à droite)
+4. Cliquer sur **Charger l'extension non empaquetée**
+5. Sélectionner le dossier `formaxe-acquisition/`
+6. L'extension apparaît dans la barre d'outils Chrome
 
 ### Configuration
 
-1. Cliquer sur l'icône de l'extension > **Options**
-2. Entrer l'URL du webhook de destination
-3. Sauvegarder
+1. Cliquer sur l'icône de l'extension → **Réglages**
+2. L'URL du webhook est pré-remplie par défaut
+3. Sélectionner le **commercial par défaut**
+4. Sauvegarder
 
 ## Utilisation
 
-1. Naviguer sur une page contact Decidento (ex: `platform.decidento.com/extranet/company/detail/...`)
-2. Un bouton **Formaxe** apparaît sous chaque bloc contact
-3. Cliquer pour déplier le mini-formulaire
-4. Sélectionner le **Statut** et le **Commercial**
-5. Cliquer sur **Envoyer** pour exporter les données vers le webhook
+1. Se connecter sur [platform.decidento.com](https://platform.decidento.com)
+2. Naviguer vers une page contenant des fiches contacts
+3. Un bouton **Envoyer vers HubSpot** apparaît sous chaque contact
+4. Sélectionner le **statut de prospection** et le **commercial**
+5. Cliquer sur **Envoyer vers HubSpot**
+6. Confirmation verte en cas de succès
+
+Les contacts déjà dans HubSpot affichent un badge :
+> 🟢 Contacté le 05/03/2026 — Email envoyé par Baptiste
 
 ## Données extraites
 
@@ -48,14 +68,15 @@ Formaxe - Acquisition est une extension Chrome qui s'intègre directement dans l
 | `name` | Nom complet du contact |
 | `position` | Poste / fonction |
 | `address` | Localisation (ville, code postal) |
-| `title_tag` | Titre hiérarchique (ex: Dirigeant opérationnel) |
+| `title_tag` | Titre hiérarchique |
 | `linkedin_url` | URL du profil LinkedIn |
-| `email` | Email (si détecté) |
+| `email` | Email (si disponible) |
 
 ### Entreprise
 | Champ | Description |
 |-------|-------------|
 | `name` | Raison sociale |
+| `siren` | Numéro SIREN (extrait de l'URL) |
 | `address` | Adresse complète |
 | `phone` | Téléphone |
 | `website` | Site internet |
@@ -63,43 +84,28 @@ Formaxe - Acquisition est une extension Chrome qui s'intègre directement dans l
 ### Métadonnées
 | Champ | Description |
 |-------|-------------|
-| `commercial` | Nom du commercial sélectionné |
-| `status` | Statut d'appel sélectionné |
-| `timestamp` | Date et heure d'envoi (ISO 8601) |
+| `commercial` | Commercial sélectionné |
+| `status` | Statut de prospection |
+| `timestamp` | Date/heure d'envoi (ISO 8601) |
 | `source_url` | URL de la page Decidento |
+| `decidento_contact_id` | Identifiant unique généré (hash SIREN + nom) |
 
-## Structure du payload webhook
+## Workflows n8n
 
-```json
-{
-  "timestamp": "2026-03-05T10:30:00.000Z",
-  "commercial": "Baptiste Cordier",
-  "status": "Rendez-vous pris",
-  "contact": {
-    "name": "Remi Vaumas",
-    "position": "Digital & IS Transformation Associate Director",
-    "address": "Nanterre (92000 - Hauts-de-Seine)",
-    "title_tag": "Dirigeant opérationnel",
-    "linkedin_url": "http://www.linkedin.com/in/rémi-de-vaumas-09314812",
-    "email": ""
-  },
-  "company": {
-    "name": "OPMOBILITY SE",
-    "address": "19 boulevard Jules Carteret, 69007 LYON - FRANCE",
-    "phone": "+33140876400",
-    "website": "http://www.opmobility.com"
-  },
-  "source_url": "https://platform.decidento.com/extranet/company/detail/FR_955512611#contacts"
-}
-```
+### Workflow principal — Envoi contact
+**17 nœuds** : Webhook → Préparer données → Chercher owners → Résoudre owner → Chercher entreprise (SIREN) → Créer/Trouver entreprise → Chercher contact existant → Créer/Mettre à jour contact → Associer contact ↔ entreprise → Répondre
+
+### Workflow de vérification — Check contact
+**4 nœuds** : Webhook → Chercher contact HubSpot → Préparer réponse → Répondre
 
 ## Stack technique
 
-- **Manifest V3** (Chrome Extension)
-- **Content Script** : injection dans les pages Decidento
-- **MutationObserver** : détection dynamique des contacts (SPA)
-- **Chrome Storage API** : sauvegarde des préférences
-- **Fetch API** : envoi vers webhook
+- **Chrome Extension** Manifest V3
+- **Content Script** avec MutationObserver (SPA)
+- **Background Service Worker** (proxy CORS)
+- **n8n Cloud** (orchestration webhooks)
+- **HubSpot CRM API** v3/v4 (OAuth2)
+- **Chrome Storage API** (préférences utilisateur)
 
 ## Charte graphique
 
@@ -109,7 +115,7 @@ Formaxe - Acquisition est une extension Chrome qui s'intègre directement dans l
 | Couleur secondaire | `#07163C` |
 | Police | Segoe UI |
 
-## Statuts disponibles
+## Statuts de prospection
 
 - Message vocal laissé
 - Email envoyé
@@ -125,7 +131,35 @@ Formaxe - Acquisition est une extension Chrome qui s'intègre directement dans l
 
 - Baptiste Cordier
 - Louis Prezeau
+- Liam Gaillard
+- Héla de Formaxe
+- Carine de Formaxe
+
+## Structure du projet
+
+```
+formaxe-acquisition/
+├── manifest.json
+├── background.js
+├── content/
+│   ├── content.js
+│   └── content.css
+├── popup/
+│   ├── popup.html
+│   ├── popup.js
+│   └── popup.css
+├── options/
+│   ├── options.html
+│   ├── options.js
+│   └── options.css
+├── icons/
+├── images/
+├── n8n-workflow/
+│   ├── workflow-decidento-hubspot.json
+│   └── workflow-check-contact.json
+└── hubspot-setup/
+```
 
 ---
 
-**Developed by Gripow**
+**Developed by [Gripow](https://gripow.com)**
