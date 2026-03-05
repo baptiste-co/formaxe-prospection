@@ -235,6 +235,81 @@
   fill: currentColor;
 }
 
+/* ── New input fields (phone, email) ── */
+.formaxe-form-input {
+  padding: 7px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #07163C;
+  background: #fff;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.formaxe-form-input:focus {
+  border-color: #54B6B4;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(84, 182, 180, 0.2);
+}
+
+.formaxe-form-input::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+.formaxe-form-hint {
+  font-size: 9px;
+  color: #999;
+  font-style: italic;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.2;
+  margin-top: 1px;
+}
+
+/* ── Notes textarea ── */
+.formaxe-form-group-notes {
+  margin-top: 8px;
+}
+
+.formaxe-form-textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #07163C;
+  background: #fff;
+  resize: vertical;
+  min-height: 50px;
+  max-height: 200px;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.formaxe-form-textarea:focus {
+  border-color: #54B6B4;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(84, 182, 180, 0.2);
+}
+
+.formaxe-form-textarea::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* ── Form rows layout ── */
+.formaxe-form-row-fields {
+  margin-bottom: 10px;
+}
+
+.formaxe-form-row-selects {
+  margin-bottom: 0;
+}
+
 /* Success / Error feedback */
 .formaxe-feedback {
   font-size: 11px;

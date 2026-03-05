@@ -18,7 +18,7 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "// Préparer les données du webhook\nconst body = $input.first().json.body;\nconst contact = body.contact || {};\nconst company = body.company || {};\n\n// Séparer prénom / nom\nconst nameParts = (contact.name || '').trim().split(/\\s+/);\nconst lastname = nameParts.pop() || '';\nconst firstname = nameParts.join(' ') || '';\n\n// Mapper le statut vers la valeur enum HubSpot\nconst statusMap = {\n  'Message vocal laissé': 'message_vocal_laisse',\n  'Email envoyé': 'email_envoye',\n  'Injoignable': 'injoignable',\n  'Rendez-vous pris': 'rendez_vous_pris',\n  'Ne plus rappeler': 'ne_plus_rappeler',\n  'Déjà appelé': 'deja_appele',\n  'Pas intéressé': 'pas_interesse',\n  'Déjà en partenariat': 'deja_en_partenariat',\n  'A raccroché': 'a_raccroche'\n};\n\n// Mapper le commercial vers la valeur enum HubSpot\nconst commercialMap = {\n  'Baptiste Cordier': 'baptiste_cordier',\n  'Louis Prezeau': 'louis_prezeau'\n};\n\nreturn [{\n  json: {\n    contact_firstname: firstname,\n    contact_lastname: lastname,\n    contact_email: contact.email || '',\n    contact_position: contact.position || '',\n    contact_title_tag: contact.title_tag || '',\n    contact_linkedin: contact.linkedin_url || '',\n    contact_address: contact.address || '',\n    company_name: company.name || '',\n    company_address: company.address || '',\n    company_phone: company.phone || '',\n    company_website: company.website || '',\n    siren: company.siren || '',\n    siret: company.siret || '',\n    type_entreprise: company.type_entreprise || '',\n    effectif: company.effectif || '',\n    chiffre_affaires: company.chiffre_affaires || '',\n    capital_social: company.capital_social || '',\n    forme_juridique: company.forme_juridique || '',\n    numero_tva: company.numero_tva || '',\n    convention_collective: company.convention_collective || '',\n    status_raw: body.status || '',\n    status_enum: statusMap[body.status] || body.status || '',\n    commercial_raw: body.commercial || '',\n    commercial_enum: commercialMap[body.commercial] || body.commercial || '',\n    source_url: body.source_url || '',\n    timestamp: body.timestamp || new Date().toISOString(),\n    decidento_contact_id: body.decidento_contact_id || ''\n  }\n}];"
+        "jsCode": "// Préparer les données du webhook\nconst body = $input.first().json.body;\nconst contact = body.contact || {};\nconst company = body.company || {};\n\n// Séparer prénom / nom\nconst nameParts = (contact.name || '').trim().split(/\\s+/);\nconst lastname = nameParts.pop() || '';\nconst firstname = nameParts.join(' ') || '';\n\n// Mapper le statut vers la valeur enum HubSpot\nconst statusMap = {\n  'Message vocal laissé': 'message_vocal_laisse',\n  'Email envoyé': 'email_envoye',\n  'Injoignable': 'injoignable',\n  'Rendez-vous pris': 'rendez_vous_pris',\n  'Ne plus rappeler': 'ne_plus_rappeler',\n  'Déjà appelé': 'deja_appele',\n  'Pas intéressé': 'pas_interesse',\n  'Déjà en partenariat': 'deja_en_partenariat',\n  'A raccroché': 'a_raccroche'\n};\n\n// Générer dynamiquement la valeur enum du commercial (snake_case normalisé)\nfunction toSnakeCase(name) {\n  return (name || '').trim().toLowerCase()\n    .normalize('NFD').replace(/[\\u0300-\\u036f]/g, '')\n    .replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');\n}\n\nreturn [{\n  json: {\n    contact_firstname: firstname,\n    contact_lastname: lastname,\n    contact_email: contact.email || '',\n    contact_phone: contact.phone || '',\n    contact_position: contact.position || '',\n    contact_title_tag: contact.title_tag || '',\n    contact_linkedin: contact.linkedin_url || '',\n    contact_address: contact.address || '',\n    notes: body.notes || '',\n    company_name: company.name || '',\n    company_address: company.address || '',\n    company_phone: company.phone || '',\n    company_website: company.website || '',\n    siren: company.siren || '',\n    siret: company.siret || '',\n    type_entreprise: company.type_entreprise || '',\n    effectif: company.effectif || '',\n    chiffre_affaires: company.chiffre_affaires || '',\n    capital_social: company.capital_social || '',\n    forme_juridique: company.forme_juridique || '',\n    numero_tva: company.numero_tva || '',\n    convention_collective: company.convention_collective || '',\n    status_raw: body.status || '',\n    status_enum: statusMap[body.status] || body.status || '',\n    commercial_raw: body.commercial || '',\n    commercial_enum: toSnakeCase(body.commercial),\n    source_url: body.source_url || '',\n    timestamp: body.timestamp || new Date().toISOString(),\n    decidento_contact_id: body.decidento_contact_id || ''\n  }\n}];"
       },
       "id": "d1a1a1a1-0002-4000-8000-000000000002",
       "name": "Préparer les données",
@@ -221,7 +221,7 @@
         "nodeCredentialType": "hubspotOAuth2Api",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ (() => { const d = $('Fusionner company_id').first().json; const props = { firstname: d.contact_firstname, lastname: d.contact_lastname, jobtitle: d.contact_position, address: d.contact_address, titre_decidento: d.contact_title_tag, statut_prospection_decidento: d.status_enum, commercial_decidento: d.commercial_enum, source_decidento_url: d.source_url, decidento_contact_id: d.decidento_contact_id }; if (d.contact_email) props.email = d.contact_email; if (d.contact_linkedin) props.hs_linkedin_url = d.contact_linkedin; if (d.owner_id) props.hubspot_owner_id = d.owner_id; return JSON.stringify({ properties: props }); })() }}",
+        "jsonBody": "={{ (() => { const d = $('Fusionner company_id').first().json; const props = { firstname: d.contact_firstname, lastname: d.contact_lastname, jobtitle: d.contact_position, address: d.contact_address, titre_decidento: d.contact_title_tag, statut_prospection_decidento: d.status_enum, commercial_decidento: d.commercial_enum, source_decidento_url: d.source_url, decidento_contact_id: d.decidento_contact_id }; if (d.contact_email) props.email = d.contact_email; if (d.contact_phone) props.phone = d.contact_phone; if (d.contact_linkedin) props.hs_linkedin_url = d.contact_linkedin; if (d.owner_id) props.hubspot_owner_id = d.owner_id; return JSON.stringify({ properties: props }); })() }}",
         "options": {
           "response": { "response": { "fullResponse": true } }
         }
@@ -243,7 +243,7 @@
         "nodeCredentialType": "hubspotOAuth2Api",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ (() => { const d = $('Fusionner company_id').first().json; const props = { firstname: d.contact_firstname, lastname: d.contact_lastname, jobtitle: d.contact_position, address: d.contact_address, titre_decidento: d.contact_title_tag, statut_prospection_decidento: d.status_enum, commercial_decidento: d.commercial_enum, source_decidento_url: d.source_url, decidento_contact_id: d.decidento_contact_id }; if (d.contact_email) props.email = d.contact_email; if (d.contact_linkedin) props.hs_linkedin_url = d.contact_linkedin; if (d.owner_id) props.hubspot_owner_id = d.owner_id; return JSON.stringify({ properties: props }); })() }}",
+        "jsonBody": "={{ (() => { const d = $('Fusionner company_id').first().json; const props = { firstname: d.contact_firstname, lastname: d.contact_lastname, jobtitle: d.contact_position, address: d.contact_address, titre_decidento: d.contact_title_tag, statut_prospection_decidento: d.status_enum, commercial_decidento: d.commercial_enum, source_decidento_url: d.source_url, decidento_contact_id: d.decidento_contact_id }; if (d.contact_email) props.email = d.contact_email; if (d.contact_phone) props.phone = d.contact_phone; if (d.contact_linkedin) props.hs_linkedin_url = d.contact_linkedin; if (d.owner_id) props.hubspot_owner_id = d.owner_id; return JSON.stringify({ properties: props }); })() }}",
         "options": {
           "response": { "response": { "fullResponse": true } }
         }
@@ -292,8 +292,52 @@
     },
     {
       "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "check-notes",
+              "leftValue": "={{ $('Fusionner contact_id').first().json.notes }}",
+              "rightValue": "",
+              "operator": { "type": "string", "operation": "notEquals" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d1a1a1a1-0030-4000-8000-000000000030",
+      "name": "Notes présentes ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [3330, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/notes",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ (() => { const d = $('Fusionner contact_id').first().json; const statusLabel = d.status_raw || ''; const commercial = d.commercial_raw || ''; const ts = d.timestamp ? new Date(d.timestamp).toLocaleString('fr-FR') : ''; const header = '📞 Appel Decidento — ' + statusLabel; const meta = []; if (commercial) meta.push('Commercial : ' + commercial); if (ts) meta.push('Date : ' + ts); const body = header + '\\n' + meta.join(' | ') + '\\n\\n' + d.notes; return JSON.stringify({ properties: { hs_note_body: body, hs_timestamp: d.timestamp || new Date().toISOString() }, associations: [{ to: { id: d.contact_id }, types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 202 }] }] }); })() }}",
+        "options": {
+          "response": { "response": { "fullResponse": true } }
+        }
+      },
+      "id": "d1a1a1a1-0031-4000-8000-000000000031",
+      "name": "Créer note HubSpot",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [3550, 180],
+      "credentials": {
+        "hubspotOAuth2Api": { "id": "u2JYQLBBKAkG4wic", "name": "Formaxe" }
+      }
+    },
+    {
+      "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ success: true, contact_id: $('Fusionner contact_id').first().json.contact_id, contact_action: $('Fusionner contact_id').first().json.contact_action, company_id: $('Fusionner contact_id').first().json.company_id, owner_id: $('Résoudre owner ID').first().json.owner_id || 'non trouvé', message: $('Fusionner contact_id').first().json.contact_action === 'updated' ? 'Contact mis à jour et entreprise associée' : 'Contact et entreprise créés/associés avec succès' }) }}",
+        "responseBody": "={{ JSON.stringify({ success: true, contact_id: $('Fusionner contact_id').first().json.contact_id, contact_action: $('Fusionner contact_id').first().json.contact_action, company_id: $('Fusionner contact_id').first().json.company_id, owner_id: $('Résoudre owner ID').first().json.owner_id || 'non trouvé', notes_created: $('Fusionner contact_id').first().json.notes ? true : false, message: $('Fusionner contact_id').first().json.contact_action === 'updated' ? 'Contact mis à jour et entreprise associée' : 'Contact et entreprise créés/associés avec succès' }) }}",
         "options": {
           "responseCode": 200
         }
@@ -302,7 +346,7 @@
       "name": "Répondre succès",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [3330, 300]
+      "position": [3770, 300]
     }
   ],
   "connections": {
@@ -358,6 +402,15 @@
       "main": [[{ "node": "Associer contact ↔ entreprise", "type": "main", "index": 0 }]]
     },
     "Associer contact ↔ entreprise": {
+      "main": [[{ "node": "Notes présentes ?", "type": "main", "index": 0 }]]
+    },
+    "Notes présentes ?": {
+      "main": [
+        [{ "node": "Créer note HubSpot", "type": "main", "index": 0 }],
+        [{ "node": "Répondre succès", "type": "main", "index": 0 }]
+      ]
+    },
+    "Créer note HubSpot": {
       "main": [[{ "node": "Répondre succès", "type": "main", "index": 0 }]]
     }
   },

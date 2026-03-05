@@ -1,0 +1,94 @@
+{
+  "name": "[Formaxe] Liste Owners",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "formaxe-owners",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "o1a1a1a1-0001-4000-8000-000000000001",
+      "name": "Webhook Owners",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [250, 300],
+      "webhookId": "a47f92c3-8b1d-4e6a-bf23-1d5c8e9f0a42"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.hubapi.com/crm/v3/owners",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "limit", "value": "100" }
+          ]
+        },
+        "options": {
+          "response": { "response": { "fullResponse": true } }
+        }
+      },
+      "id": "o1a1a1a1-0002-4000-8000-000000000002",
+      "name": "Chercher owners HubSpot",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [470, 300],
+      "credentials": {
+        "hubspotOAuth2Api": { "id": "u2JYQLBBKAkG4wic", "name": "Formaxe" }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Formatter la liste des owners pour l'extension\nconst ownersResponse = $('Chercher owners HubSpot').first().json;\nconst owners = (ownersResponse.body && ownersResponse.body.results) || [];\n\nconst formatted = owners\n  .filter(o => (o.firstName || o.lastName))\n  .map(o => ({\n    id: o.id,\n    name: ((o.firstName || '') + ' ' + (o.lastName || '')).trim(),\n    email: o.email || ''\n  }));\n\nreturn [{\n  json: {\n    owners: formatted\n  }\n}];"
+      },
+      "id": "o1a1a1a1-0003-4000-8000-000000000003",
+      "name": "Formater la liste",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [690, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin", "value": "*" }
+            ]
+          }
+        }
+      },
+      "id": "o1a1a1a1-0004-4000-8000-000000000004",
+      "name": "Répondre",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [910, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Owners": {
+      "main": [
+        [{ "node": "Chercher owners HubSpot", "type": "main", "index": 0 }]
+      ]
+    },
+    "Chercher owners HubSpot": {
+      "main": [
+        [{ "node": "Formater la liste", "type": "main", "index": 0 }]
+      ]
+    },
+    "Formater la liste": {
+      "main": [
+        [{ "node": "Répondre", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

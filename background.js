@@ -56,4 +56,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     return true;
   }
+
+  // ── Fetch data from n8n webhook (GET) ──
+  if (request.action === 'fetchWebhook') {
+    const { url } = request;
+
+    fetch(url, { method: 'GET' })
+      .then(async (response) => {
+        if (response.ok) {
+          const text = await response.text();
+          sendResponse({ success: true, status: response.status, body: text });
+        } else {
+          sendResponse({ success: false, error: `HTTP ${response.status}` });
+        }
+      })
+      .catch((err) => {
+        sendResponse({ success: false, error: err.message });
+      });
+
+    return true;
+  }
 });

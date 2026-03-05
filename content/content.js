@@ -24,12 +24,72 @@
     'A raccroché'
   ];
 
-  const COMMERCIAUX = [
+  // Liste de commerciaux par défaut (fallback si le webhook owners échoue)
+  let COMMERCIAUX = [
     'Baptiste Cordier',
     'Louis Prezeau'
   ];
 
   const CHECK_WEBHOOK_PATH = 'formaxe-check';
+  const OWNERS_WEBHOOK_PATH = 'formaxe-owners';
+
+  // Cache des owners chargés dynamiquement depuis HubSpot
+  let OWNERS_CACHE = null;
+
+  // ── Utility: fetch owners list from n8n webhook ──
+  async function fetchOwnersFromHubSpot() {
+    try {
+      const { webhookUrl } = await chrome.storage.local.get(['webhookUrl']);
+      const baseUrl = (webhookUrl || WEBHOOK_DEFAULT).replace(/\/[^\/]*$/, '');
+      const ownersUrl = baseUrl + '/' + OWNERS_WEBHOOK_PATH;
+
+      return new Promise((resolve) => {
+        chrome.runtime.sendMessage(
+          { action: 'fetchWebhook', url: ownersUrl },
+          (response) => {
+            if (chrome.runtime.lastError || !response || !response.success) {
+              resolve(null);
+            } else {
+              try {
+                const data = typeof response.body === 'string' ? JSON.parse(response.body) : response.body;
+                if (data && data.owners && Array.isArray(data.owners)) {
+                  resolve(data.owners);
+                } else {
+                  resolve(null);
+                }
+              } catch (e) {
+                resolve(null);
+              }
+            }
+          }
+        );
+      });
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // ── Load owners on startup and cache them ──
+  async function loadOwners() {
+    const owners = await fetchOwnersFromHubSpot();
+    if (owners && owners.length > 0) {
+      OWNERS_CACHE = owners;
+      COMMERCIAUX = owners.map(o => o.name);
+      // Save to storage for offline fallback
+      chrome.storage.local.set({ cachedOwners: owners });
+      console.log(`[Formaxe] ${owners.length} commerciaux chargés depuis HubSpot`);
+    } else {
+      // Try loading from cache
+      const { cachedOwners } = await chrome.storage.local.get(['cachedOwners']);
+      if (cachedOwners && cachedOwners.length > 0) {
+        OWNERS_CACHE = cachedOwners;
+        COMMERCIAUX = cachedOwners.map(o => o.name);
+        console.log(`[Formaxe] ${cachedOwners.length} commerciaux chargés depuis le cache`);
+      } else {
+        console.log('[Formaxe] Utilisation de la liste de commerciaux par défaut');
+      }
+    }
+  }
 
   // ── Utility: generate a deterministic contact ID from SIREN + name ──
   function generateContactId(siren, contactName) {
@@ -84,12 +144,19 @@
     if (statusData && statusData.exists) {
       const lastDate = statusData.last_date ? new Date(statusData.last_date).toLocaleDateString('fr-FR') : '';
       const statusText = statusData.last_status || '';
-      // Mapper les valeurs enum vers des noms lisibles
-      const commercialLabels = {
-        'baptiste_cordier': 'Baptiste',
-        'louis_prezeau': 'Louis'
-      };
-      const commercialName = commercialLabels[statusData.commercial] || statusData.commercial || '';
+      // Résoudre le nom du commercial depuis le cache owners ou fallback sur la valeur brute
+      let commercialName = statusData.commercial || '';
+      if (OWNERS_CACHE && statusData.owner_id) {
+        const ownerMatch = OWNERS_CACHE.find(o => o.id === String(statusData.owner_id));
+        if (ownerMatch) {
+          commercialName = ownerMatch.name.split(' ')[0]; // Prénom seulement
+        }
+      }
+      // Fallback: nettoyer les valeurs enum (snake_case → Prénom)
+      if (commercialName.includes('_')) {
+        commercialName = commercialName.split('_')[0];
+        commercialName = commercialName.charAt(0).toUpperCase() + commercialName.slice(1);
+      }
       badge.classList.add('formaxe-status-contacted');
       badge.innerHTML = `<span class="formaxe-status-dot formaxe-dot-green"></span> Contacté${lastDate ? ' le ' + lastDate : ''}${statusText ? ' — ' + statusText : ''}${commercialName ? ' par ' + commercialName : ''}`;
     } else {
@@ -270,6 +337,11 @@
     const form = document.createElement('div');
     form.className = 'formaxe-form-container';
 
+    // Pré-remplir le téléphone : celui du contact s'il existe, sinon celui de l'entreprise (standard)
+    const defaultPhone = companyData.phone || '';
+    // Pré-remplir l'email : celui détecté sur la fiche contact Decidento (pas l'email entreprise)
+    const defaultEmail = contactData.email || '';
+
     form.innerHTML = `
       <div class="formaxe-form-header">
         <img src="${getLogoURL()}" alt="Formaxe" class="formaxe-form-logo">
@@ -280,7 +352,19 @@
         ${companyData.name ? ' | ' + companyData.name : ''}
         ${companyData.siren ? ' <span class="formaxe-siren-badge">SIREN ' + companyData.siren + '</span>' : ''}
       </div>
-      <div class="formaxe-form-row">
+      <div class="formaxe-form-row formaxe-form-row-fields">
+        <div class="formaxe-form-group">
+          <label class="formaxe-form-label">Téléphone</label>
+          <input type="tel" class="formaxe-form-input formaxe-input-phone" value="${defaultPhone}" placeholder="Numéro de téléphone">
+          <span class="formaxe-form-hint">Par défaut : standard de l'entreprise</span>
+        </div>
+        <div class="formaxe-form-group">
+          <label class="formaxe-form-label">Email</label>
+          <input type="email" class="formaxe-form-input formaxe-input-email" value="${defaultEmail}" placeholder="${defaultEmail ? '' : 'Aucun email détecté'}">
+          <span class="formaxe-form-hint">${defaultEmail ? 'Email détecté sur Decidento' : 'Saisir l\'email si obtenu'}</span>
+        </div>
+      </div>
+      <div class="formaxe-form-row formaxe-form-row-selects">
         <div class="formaxe-form-group">
           <label class="formaxe-form-label">Statut</label>
           <select class="formaxe-form-select formaxe-select-status">
@@ -299,6 +383,10 @@
           <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
           Envoyer
         </button>
+      </div>
+      <div class="formaxe-form-group formaxe-form-group-notes">
+        <label class="formaxe-form-label">Notes</label>
+        <textarea class="formaxe-form-textarea formaxe-input-notes" rows="3" placeholder="Notes de l'appel (optionnel)..."></textarea>
       </div>
       <div class="formaxe-feedback"></div>
       <div class="formaxe-webhook-config">
@@ -331,6 +419,11 @@
         setTimeout(() => { webhookSaveBtn.textContent = 'OK'; }, 1500);
       }
     });
+
+    // References to new fields
+    const phoneInput = form.querySelector('.formaxe-input-phone');
+    const emailInput = form.querySelector('.formaxe-input-email');
+    const notesInput = form.querySelector('.formaxe-input-notes');
 
     // Enable send button only when both dropdowns are selected
     const statusSelect = form.querySelector('.formaxe-select-status');
@@ -368,13 +461,15 @@
         commercial: commercialSelect.value,
         status: statusSelect.value,
         decidento_contact_id: decidentoContactId,
+        notes: notesInput.value.trim(),
         contact: {
           name: contactData.name || '',
           position: contactData.position || '',
           address: contactData.address || '',
           title_tag: contactData.title_tag || '',
           linkedin_url: contactData.linkedin_url || '',
-          email: contactData.email || ''
+          email: emailInput.value.trim() || contactData.email || '',
+          phone: phoneInput.value.trim() || ''
         },
         company: {
           name: companyData.name || '',
@@ -531,8 +626,11 @@
   }
 
   // ── Initialize ──
-  function init() {
+  async function init() {
     console.log(`[Formaxe - Acquisition] v${VERSION} loaded on ${window.location.href}`);
+
+    // Load owners list from HubSpot before injecting buttons
+    await loadOwners();
 
     // Initial injection
     setTimeout(injectButtons, 1000);
