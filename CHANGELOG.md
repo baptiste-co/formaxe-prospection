@@ -5,14 +5,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ## [1.4.0] - 2026-03-05
 
 ### Ajouté
-- **Email 1 — Confirmation RDV + Brochure** : envoi SMTP automatique quand la checkbox "Envoyer mail de confirmation de RDV" est cochée. Contient la présentation de L'Atelier des Experts©, les 4 engagements, et un bouton de téléchargement de la brochure PDF
-- **Email 2 — Post-RDV / Contrat Yousign** : envoi SMTP automatique quand la checkbox "Envoyer mail de présentation de l'offre" est cochée. Mentionne l'envoi du contrat via Yousign et l'accès à la plateforme Stafy©
-- **Signatures dynamiques par commercial** : Louis PREZEAU (Commercial Partenaires | Atelier des Experts©, 0184754720, louis@atelierdesexperts.fr), Baptiste Cordier, et signature par défaut. Chaque email est signé par le commercial sélectionné
-- **Log CRM automatique** : chaque email envoyé est enregistré sur la fiche contact HubSpot via l'API CRM Email (`/crm/v3/objects/emails`) avec association type 198, sujet, contenu HTML/texte, sender et recipient
-- **7 nouveaux nœuds n8n** : "Préparer emails", "Email confirmation ?", "Envoyer email confirmation", "Logger email 1 CRM", "Email offre ?", "Envoyer email offre", "Logger email 2 CRM" → workflow passe de 24 à 31 nœuds
-
-### ⚠️ En attente
-- **Credential SMTP** : les nœuds d'envoi email ont un placeholder `SMTP_CREDENTIAL_ID`. Il faut créer le credential SMTP dans n8n (Gmail App Password ou autre) et remplacer l'ID dans les 2 nœuds emailSend
+- **Envoi email via Mailjet API** : remplace l'approche SMTP par l'API Mailjet v3.1 (`POST /v3.1/send`). Expéditeur unique `contact@stafy.fr` avec Reply-To dynamique vers l'email du commercial
+- **Email 1 — Confirmation RDV + Brochure** : envoi automatique quand la checkbox "Envoyer mail de confirmation de RDV" est cochée. Contient la présentation de L'Atelier des Experts©, les 4 engagements, et un bouton de téléchargement de la brochure PDF
+- **Email 2 — Post-RDV / Contrat Yousign** : envoi automatique quand la checkbox "Envoyer mail de présentation de l'offre" est cochée. Mentionne l'envoi du contrat via Yousign et l'accès à la plateforme Stafy©
+- **Signatures dynamiques par commercial** : Louis PREZEAU (Commercial Partenaires | Atelier des Experts©), Baptiste Cordier, et signature par défaut avec coordonnées complètes et lien Calendly
+- **Log CRM automatique** : chaque email envoyé est enregistré sur la fiche contact HubSpot via l'API CRM Email (`/crm/v3/objects/emails`) avec association type 198
+- **Templates HTML email** : 2 fichiers de référence dans `email-templates/` (confirmation RDV + post-RDV contrat)
+- **7 nouveaux nœuds n8n** : "Préparer emails", "Email confirmation ?", "Envoyer email confirmation" (Mailjet), "Logger email 1 CRM", "Email offre ?", "Envoyer email offre" (Mailjet), "Logger email 2 CRM" → workflow passe de 24 à 31 nœuds
 
 ## [1.3.0] - 2026-03-05
 
