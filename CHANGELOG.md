@@ -2,14 +2,26 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [1.4.0] - 2026-03-05
+
+### Ajouté
+- **Email 1 — Confirmation RDV + Brochure** : envoi SMTP automatique quand la checkbox "Envoyer mail de confirmation de RDV" est cochée. Contient la présentation de L'Atelier des Experts©, les 4 engagements, et un bouton de téléchargement de la brochure PDF
+- **Email 2 — Post-RDV / Contrat Yousign** : envoi SMTP automatique quand la checkbox "Envoyer mail de présentation de l'offre" est cochée. Mentionne l'envoi du contrat via Yousign et l'accès à la plateforme Stafy©
+- **Signatures dynamiques par commercial** : Louis PREZEAU (Commercial Partenaires | Atelier des Experts©, 0184754720, louis@atelierdesexperts.fr), Baptiste Cordier, et signature par défaut. Chaque email est signé par le commercial sélectionné
+- **Log CRM automatique** : chaque email envoyé est enregistré sur la fiche contact HubSpot via l'API CRM Email (`/crm/v3/objects/emails`) avec association type 198, sujet, contenu HTML/texte, sender et recipient
+- **7 nouveaux nœuds n8n** : "Préparer emails", "Email confirmation ?", "Envoyer email confirmation", "Logger email 1 CRM", "Email offre ?", "Envoyer email offre", "Logger email 2 CRM" → workflow passe de 24 à 31 nœuds
+
+### ⚠️ En attente
+- **Credential SMTP** : les nœuds d'envoi email ont un placeholder `SMTP_CREDENTIAL_ID`. Il faut créer le credential SMTP dans n8n (Gmail App Password ou autre) et remplacer l'ID dans les 2 nœuds emailSend
+
 ## [1.3.0] - 2026-03-05
 
 ### Ajouté
 - **Pipeline HubSpot "Prospection Decidento"** : 8 stages (Nouveau prospect → Tentative de contact → Contact établi → RDV planifié → RDV réalisé → Proposition envoyée → Gagné → Perdu), créé automatiquement via API (id `3625113819`)
 - **Création automatique de Deal** : à chaque envoi depuis Decidento, un deal est créé dans le pipeline avec le stage correspondant au statut sélectionné, associé au contact et à l'entreprise
 - **Date picker RDV** : apparaît conditionnellement quand le statut "Rendez-vous pris" est sélectionné
-- **Checkbox "Envoyer mail de confirmation de RDV"** : apparaît avec le date picker (envoi email en attente de config SMTP)
-- **Checkbox "Envoyer mail de présentation de l'offre"** : toujours visible dans le formulaire (envoi email en attente de config SMTP)
+- **Checkbox "Envoyer mail de confirmation de RDV"** : apparaît avec le date picker
+- **Checkbox "Envoyer mail de présentation de l'offre"** : toujours visible dans le formulaire
 - **Tâche de rappel automatique** : si statut = message vocal / injoignable / email envoyé → tâche HubSpot créée à J+3, assignée au commercial
 - **Tâche RDV automatique** : si une date de RDV est renseignée → tâche HubSpot créée à la date du RDV
 - **5 nouveaux nœuds n8n** : "Créer Deal Prospection", "Tâche rappel ?", "Créer tâche rappel J+3", "RDV tâche ?", "Créer tâche RDV" → workflow passe de 19 à 24 nœuds
@@ -18,9 +30,6 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - Le payload envoyé au webhook inclut désormais `rdv_date`, `send_confirmation_email`, `send_offer_email`
 - Le nœud "Préparer les données" inclut le mapping statut → stage pipeline (`pipeline_stage_id`)
 - Version de l'extension passe à 1.3.0
-
-### ⚠️ En attente
-- **Envoi d'emails** : le credential OAuth2 HubSpot n'a pas le scope Marketing. Les checkboxes email sont en place côté extension, le workflow n8n est prêt à recevoir les nœuds email dès configuration SMTP ou ajout du scope
 
 ## [1.2.0] - 2026-03-05
 
