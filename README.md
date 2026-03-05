@@ -93,10 +93,13 @@ Les contacts déjà dans HubSpot affichent un badge :
 ## Workflows n8n
 
 ### Workflow principal — Envoi contact
-**17 nœuds** : Webhook → Préparer données → Chercher owners → Résoudre owner → Chercher entreprise (SIREN) → Créer/Trouver entreprise → Chercher contact existant → Créer/Mettre à jour contact → Associer contact ↔ entreprise → Répondre
+**33 nœuds** : Webhook → Préparer données → Chercher owners → Résoudre owner → Chercher entreprise (SIREN) → Créer/Trouver entreprise → Chercher contact existant → Créer/Mettre à jour contact → Associer contact ↔ entreprise → Créer Deal → Créer note → Créer tâches (RDV + rappel J+3) → Préparer emails → Récupérer owner HubSpot → Générer signature dynamique → Envoyer emails (confirmation + offre) via Mailjet → Logger emails CRM → Répondre
 
 ### Workflow de vérification — Check contact
 **4 nœuds** : Webhook → Chercher contact HubSpot → Préparer réponse → Répondre
+
+### Workflow owners — Liste commerciaux
+**4 nœuds** : Webhook → Chercher owners HubSpot → Préparer liste → Répondre
 
 ## Stack technique
 
@@ -105,6 +108,7 @@ Les contacts déjà dans HubSpot affichent un badge :
 - **Background Service Worker** (proxy CORS)
 - **n8n Cloud** (orchestration webhooks)
 - **HubSpot CRM API** v3/v4 (OAuth2)
+- **Mailjet API** v3.1 (emails transactionnels)
 - **Chrome Storage API** (préférences utilisateur)
 
 ## Charte graphique

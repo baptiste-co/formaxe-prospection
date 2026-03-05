@@ -2,6 +2,33 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [1.5.0] - 2026-03-05
+
+### Ajouté
+- **Signature dynamique par commercial** : 2 nouveaux nœuds ("Récupérer owner HubSpot" + "Générer signature") remplacent les signatures hardcodées. Le nom et email sont récupérés dynamiquement via l'API HubSpot Owners, complétés par un annuaire interne (titre, téléphone, lien HubSpot Meetings)
+- **Templates email Gmail-like** : refonte des templates HTML sans emojis, sans couleurs, style professionnel minimaliste
+
+### Corrigé
+- **HubSpot 429 rate limit** : ajout `retryOnFail` (3 tentatives, délai 2s) sur tous les HTTP nodes des 3 workflows
+- **Email duplicate 400** : suppression du champ `email` du body PATCH contact (email uniquement transmis sur CREATE)
+- **IF nodes type validation** : `conditions.options.typeValidation` passé de "strict" à "loose" sur 5 nœuds IF
+- **Préparer emails** : mode changé en `runOnceForAllItems` + lecture des données depuis `$('Fusionner contact_id')` au lieu de `$input`
+- **Récupérer owner HubSpot** : URL corrigée pour lire `owner_id` depuis le nœud "Résoudre owner ID"
+- **Mailjet body format** : correction du format body (`sendBody: true`, `specifyBody: json`, `jsonBody`)
+- **Logger CRM** : réécriture du jsonBody en pattern IIFE `={{ (() => { ... })() }}`
+- **Mailjet auth** : passage en `authentication: none` avec headers Authorization manuels (Basic Auth)
+
+### Modifié
+- Nouvelle clé API Mailjet (sous-clé "Automatisations")
+- Expéditeur emails : `contact@stafy.fr`
+- Workflow principal passe de 31 à 33 nœuds
+
+### En attente
+- **Envoi email non fonctionnel** : la sous-clé API Mailjet (`IsMaster: false`) nécessite une validation individuelle des expéditeurs. Les expéditeurs (`contact@stafy.fr`, `info@stafy.fr`, `communication@stafy.io`) restent "Inactive" malgré la validation DNS (SPF + DKIM OK). Solutions possibles :
+  1. Utiliser la clé API maître Mailjet (demander à Kader Belatrache / kb@formaxe.com)
+  2. Configurer les identifiants SMTP du provider email existant (OVH, Google Workspace, etc.) et utiliser le node n8n "Send Email"
+  3. Migrer vers un autre service transactionnel (Brevo, Resend, SendGrid)
+
 ## [1.4.0] - 2026-03-05
 
 ### Ajouté
