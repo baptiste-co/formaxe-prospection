@@ -9,7 +9,7 @@
 (function () {
   'use strict';
 
-  const VERSION = '1.0.0';
+  const VERSION = '1.3.0';
   const WEBHOOK_DEFAULT = 'https://getgarsen.app.n8n.cloud/webhook/decidento';
 
   const STATUS_OPTIONS = [
@@ -384,6 +384,26 @@
           Envoyer
         </button>
       </div>
+      <div class="formaxe-rdv-section" style="display:none;">
+        <div class="formaxe-form-row formaxe-form-row-fields">
+          <div class="formaxe-form-group">
+            <label class="formaxe-form-label">Date du rendez-vous</label>
+            <input type="datetime-local" class="formaxe-form-input formaxe-input-rdv-date">
+          </div>
+        </div>
+        <div class="formaxe-form-row formaxe-form-row-checkboxes">
+          <label class="formaxe-checkbox-label">
+            <input type="checkbox" class="formaxe-checkbox formaxe-check-confirmation">
+            <span>Envoyer mail de confirmation de RDV</span>
+          </label>
+        </div>
+      </div>
+      <div class="formaxe-form-row formaxe-form-row-checkboxes formaxe-offer-section">
+        <label class="formaxe-checkbox-label">
+          <input type="checkbox" class="formaxe-checkbox formaxe-check-offer">
+          <span>Envoyer mail de présentation de l'offre</span>
+        </label>
+      </div>
       <div class="formaxe-form-group formaxe-form-group-notes">
         <label class="formaxe-form-label">Notes</label>
         <textarea class="formaxe-form-textarea formaxe-input-notes" rows="3" placeholder="Notes de l'appel (optionnel)..."></textarea>
@@ -424,6 +444,10 @@
     const phoneInput = form.querySelector('.formaxe-input-phone');
     const emailInput = form.querySelector('.formaxe-input-email');
     const notesInput = form.querySelector('.formaxe-input-notes');
+    const rdvSection = form.querySelector('.formaxe-rdv-section');
+    const rdvDateInput = form.querySelector('.formaxe-input-rdv-date');
+    const checkConfirmation = form.querySelector('.formaxe-check-confirmation');
+    const checkOffer = form.querySelector('.formaxe-check-offer');
 
     // Enable send button only when both dropdowns are selected
     const statusSelect = form.querySelector('.formaxe-select-status');
@@ -435,7 +459,17 @@
       sendBtn.disabled = !(statusSelect.value && commercialSelect.value);
     }
 
-    statusSelect.addEventListener('change', checkSelections);
+    // Show/hide RDV section based on status selection
+    statusSelect.addEventListener('change', () => {
+      checkSelections();
+      if (statusSelect.value === 'Rendez-vous pris') {
+        rdvSection.style.display = 'block';
+      } else {
+        rdvSection.style.display = 'none';
+        rdvDateInput.value = '';
+        checkConfirmation.checked = false;
+      }
+    });
     commercialSelect.addEventListener('change', checkSelections);
 
     // Remember last commercial selection
@@ -462,6 +496,9 @@
         status: statusSelect.value,
         decidento_contact_id: decidentoContactId,
         notes: notesInput.value.trim(),
+        rdv_date: rdvDateInput.value || '',
+        send_confirmation_email: checkConfirmation.checked,
+        send_offer_email: checkOffer.checked,
         contact: {
           name: contactData.name || '',
           position: contactData.position || '',

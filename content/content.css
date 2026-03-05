@@ -310,6 +310,43 @@
   margin-bottom: 0;
 }
 
+/* ── Checkbox rows ── */
+.formaxe-form-row-checkboxes {
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.formaxe-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #07163C;
+  cursor: pointer;
+  user-select: none;
+}
+
+.formaxe-checkbox {
+  width: 15px;
+  height: 15px;
+  accent-color: #54B6B4;
+  cursor: pointer;
+}
+
+/* ── RDV section (conditional) ── */
+.formaxe-rdv-section {
+  background: rgba(84, 182, 180, 0.06);
+  border: 1px solid rgba(84, 182, 180, 0.2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 10px;
+}
+
+.formaxe-offer-section {
+  margin-top: 8px;
+}
+
 /* Success / Error feedback */
 .formaxe-feedback {
   font-size: 11px;

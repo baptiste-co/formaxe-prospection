@@ -18,7 +18,7 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "// Préparer les données du webhook\nconst body = $input.first().json.body;\nconst contact = body.contact || {};\nconst company = body.company || {};\n\n// Séparer prénom / nom\nconst nameParts = (contact.name || '').trim().split(/\\s+/);\nconst lastname = nameParts.pop() || '';\nconst firstname = nameParts.join(' ') || '';\n\n// Mapper le statut vers la valeur enum HubSpot\nconst statusMap = {\n  'Message vocal laissé': 'message_vocal_laisse',\n  'Email envoyé': 'email_envoye',\n  'Injoignable': 'injoignable',\n  'Rendez-vous pris': 'rendez_vous_pris',\n  'Ne plus rappeler': 'ne_plus_rappeler',\n  'Déjà appelé': 'deja_appele',\n  'Pas intéressé': 'pas_interesse',\n  'Déjà en partenariat': 'deja_en_partenariat',\n  'A raccroché': 'a_raccroche'\n};\n\n// Générer dynamiquement la valeur enum du commercial (snake_case normalisé)\nfunction toSnakeCase(name) {\n  return (name || '').trim().toLowerCase()\n    .normalize('NFD').replace(/[\\u0300-\\u036f]/g, '')\n    .replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');\n}\n\nreturn [{\n  json: {\n    contact_firstname: firstname,\n    contact_lastname: lastname,\n    contact_email: contact.email || '',\n    contact_phone: contact.phone || '',\n    contact_position: contact.position || '',\n    contact_title_tag: contact.title_tag || '',\n    contact_linkedin: contact.linkedin_url || '',\n    contact_address: contact.address || '',\n    notes: body.notes || '',\n    company_name: company.name || '',\n    company_address: company.address || '',\n    company_phone: company.phone || '',\n    company_website: company.website || '',\n    siren: company.siren || '',\n    siret: company.siret || '',\n    type_entreprise: company.type_entreprise || '',\n    effectif: company.effectif || '',\n    chiffre_affaires: company.chiffre_affaires || '',\n    capital_social: company.capital_social || '',\n    forme_juridique: company.forme_juridique || '',\n    numero_tva: company.numero_tva || '',\n    convention_collective: company.convention_collective || '',\n    status_raw: body.status || '',\n    status_enum: statusMap[body.status] || body.status || '',\n    commercial_raw: body.commercial || '',\n    commercial_enum: toSnakeCase(body.commercial),\n    source_url: body.source_url || '',\n    timestamp: body.timestamp || new Date().toISOString(),\n    decidento_contact_id: body.decidento_contact_id || ''\n  }\n}];"
+        "jsCode": "// Préparer les données du webhook\nconst body = $input.first().json.body;\nconst contact = body.contact || {};\nconst company = body.company || {};\n\n// Séparer prénom / nom\nconst nameParts = (contact.name || '').trim().split(/\\s+/);\nconst lastname = nameParts.pop() || '';\nconst firstname = nameParts.join(' ') || '';\n\n// Mapper le statut vers la valeur enum HubSpot\nconst statusMap = {\n  'Message vocal laissé': 'message_vocal_laisse',\n  'Email envoyé': 'email_envoye',\n  'Injoignable': 'injoignable',\n  'Rendez-vous pris': 'rendez_vous_pris',\n  'Ne plus rappeler': 'ne_plus_rappeler',\n  'Déjà appelé': 'deja_appele',\n  'Pas intéressé': 'pas_interesse',\n  'Déjà en partenariat': 'deja_en_partenariat',\n  'A raccroché': 'a_raccroche'\n};\n\n// Mapping statut → pipeline stage ID\nconst stageMap = {\n  'Message vocal laissé': '4978411760',\n  'Email envoyé': '4978411760',\n  'Injoignable': '4978411760',\n  'Rendez-vous pris': '4978411762',\n  'Ne plus rappeler': '4978411766',\n  'Déjà appelé': '4978411761',\n  'Pas intéressé': '4978411766',\n  'Déjà en partenariat': '4978411766',\n  'A raccroché': '4978411760'\n};\n\n// Générer dynamiquement la valeur enum du commercial (snake_case normalisé)\nfunction toSnakeCase(name) {\n  return (name || '').trim().toLowerCase()\n    .normalize('NFD').replace(/[\\u0300-\\u036f]/g, '')\n    .replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');\n}\n\nreturn [{\n  json: {\n    contact_firstname: firstname,\n    contact_lastname: lastname,\n    contact_email: contact.email || '',\n    contact_phone: contact.phone || '',\n    contact_position: contact.position || '',\n    contact_title_tag: contact.title_tag || '',\n    contact_linkedin: contact.linkedin_url || '',\n    contact_address: contact.address || '',\n    notes: body.notes || '',\n    company_name: company.name || '',\n    company_address: company.address || '',\n    company_phone: company.phone || '',\n    company_website: company.website || '',\n    siren: company.siren || '',\n    siret: company.siret || '',\n    type_entreprise: company.type_entreprise || '',\n    effectif: company.effectif || '',\n    chiffre_affaires: company.chiffre_affaires || '',\n    capital_social: company.capital_social || '',\n    forme_juridique: company.forme_juridique || '',\n    numero_tva: company.numero_tva || '',\n    convention_collective: company.convention_collective || '',\n    status_raw: body.status || '',\n    status_enum: statusMap[body.status] || body.status || '',\n    pipeline_stage_id: stageMap[body.status] || '4978411759',\n    commercial_raw: body.commercial || '',\n    commercial_enum: toSnakeCase(body.commercial),\n    source_url: body.source_url || '',\n    timestamp: body.timestamp || new Date().toISOString(),\n    decidento_contact_id: body.decidento_contact_id || '',\n    rdv_date: body.rdv_date || '',\n    send_confirmation_email: body.send_confirmation_email || false,\n    send_offer_email: body.send_offer_email || false\n  }\n}];"
       },
       "id": "d1a1a1a1-0002-4000-8000-000000000002",
       "name": "Préparer les données",
@@ -292,6 +292,29 @@
     },
     {
       "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/deals",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ (() => { const d = $('Fusionner contact_id').first().json; const dealname = (d.contact_firstname + ' ' + d.contact_lastname).trim() + ' — ' + (d.company_name || ''); const props = { dealname: dealname, pipeline: '3625113819', dealstage: d.pipeline_stage_id || '4978411759' }; if (d.owner_id) props.hubspot_owner_id = d.owner_id; const associations = []; if (d.contact_id) associations.push({ to: { id: parseInt(d.contact_id) }, types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 3 }] }); if (d.company_id) associations.push({ to: { id: parseInt(d.company_id) }, types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 341 }] }); return JSON.stringify({ properties: props, associations: associations }); })() }}",
+        "options": {
+          "response": { "response": { "fullResponse": true } }
+        }
+      },
+      "id": "d1a1a1a1-0040-4000-8000-000000000040",
+      "name": "Créer Deal Prospection",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [3330, 300],
+      "credentials": {
+        "hubspotOAuth2Api": { "id": "u2JYQLBBKAkG4wic", "name": "Formaxe" }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
         "conditions": {
           "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
           "conditions": [
@@ -310,7 +333,7 @@
       "name": "Notes présentes ?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [3330, 300]
+      "position": [3550, 300]
     },
     {
       "parameters": {
@@ -329,15 +352,106 @@
       "name": "Créer note HubSpot",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [3550, 180],
+      "position": [3770, 180],
       "credentials": {
         "hubspotOAuth2Api": { "id": "u2JYQLBBKAkG4wic", "name": "Formaxe" }
-      }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "check-reminder-task",
+              "leftValue": "={{ ['message_vocal_laisse', 'injoignable', 'email_envoye'].includes($('Fusionner contact_id').first().json.status_enum) }}",
+              "rightValue": "true",
+              "operator": { "type": "boolean", "operation": "equals" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d1a1a1a1-0041-4000-8000-000000000041",
+      "name": "Tâche rappel ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [3990, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/tasks",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ (() => { const d = $('Fusionner contact_id').first().json; const dueDate = new Date(); dueDate.setDate(dueDate.getDate() + 3); const props = { hs_task_subject: 'Rappeler ' + d.contact_firstname + ' ' + d.contact_lastname + ' (' + d.company_name + ')', hs_task_body: 'Rappel automatique suite au statut : ' + d.status_raw + '\\nContact envoyé depuis Decidento le ' + new Date(d.timestamp).toLocaleDateString('fr-FR'), hs_task_status: 'NOT_STARTED', hs_task_priority: 'MEDIUM', hs_timestamp: dueDate.toISOString() }; if (d.owner_id) props.hubspot_owner_id = d.owner_id; return JSON.stringify({ properties: props, associations: [{ to: { id: parseInt(d.contact_id) }, types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 204 }] }] }); })() }}",
+        "options": {
+          "response": { "response": { "fullResponse": true } }
+        }
+      },
+      "id": "d1a1a1a1-0042-4000-8000-000000000042",
+      "name": "Créer tâche rappel J+3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [4210, 180],
+      "credentials": {
+        "hubspotOAuth2Api": { "id": "u2JYQLBBKAkG4wic", "name": "Formaxe" }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "check-rdv-task",
+              "leftValue": "={{ $('Fusionner contact_id').first().json.rdv_date }}",
+              "rightValue": "",
+              "operator": { "type": "string", "operation": "notEquals" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d1a1a1a1-0043-4000-8000-000000000043",
+      "name": "RDV tâche ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [4430, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/tasks",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ (() => { const d = $('Fusionner contact_id').first().json; const rdvDate = new Date(d.rdv_date); const props = { hs_task_subject: 'RDV avec ' + d.contact_firstname + ' ' + d.contact_lastname + ' (' + d.company_name + ')', hs_task_body: 'Rendez-vous planifié depuis Decidento\\nDate : ' + rdvDate.toLocaleString('fr-FR') + '\\nCommercial : ' + d.commercial_raw, hs_task_status: 'NOT_STARTED', hs_task_priority: 'HIGH', hs_timestamp: rdvDate.toISOString() }; if (d.owner_id) props.hubspot_owner_id = d.owner_id; return JSON.stringify({ properties: props, associations: [{ to: { id: parseInt(d.contact_id) }, types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 204 }] }] }); })() }}",
+        "options": {
+          "response": { "response": { "fullResponse": true } }
+        }
+      },
+      "id": "d1a1a1a1-0044-4000-8000-000000000044",
+      "name": "Créer tâche RDV",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [4650, 180],
+      "credentials": {
+        "hubspotOAuth2Api": { "id": "u2JYQLBBKAkG4wic", "name": "Formaxe" }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ success: true, contact_id: $('Fusionner contact_id').first().json.contact_id, contact_action: $('Fusionner contact_id').first().json.contact_action, company_id: $('Fusionner contact_id').first().json.company_id, owner_id: $('Résoudre owner ID').first().json.owner_id || 'non trouvé', notes_created: $('Fusionner contact_id').first().json.notes ? true : false, message: $('Fusionner contact_id').first().json.contact_action === 'updated' ? 'Contact mis à jour et entreprise associée' : 'Contact et entreprise créés/associés avec succès' }) }}",
+        "responseBody": "={{ JSON.stringify({ success: true, contact_id: $('Fusionner contact_id').first().json.contact_id, contact_action: $('Fusionner contact_id').first().json.contact_action, company_id: $('Fusionner contact_id').first().json.company_id, owner_id: $('Résoudre owner ID').first().json.owner_id || 'non trouvé', deal_created: true, notes_created: $('Fusionner contact_id').first().json.notes ? true : false, message: 'Pipeline prospection mis à jour avec succès' }) }}",
         "options": {
           "responseCode": 200
         }
@@ -346,7 +460,7 @@
       "name": "Répondre succès",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [3770, 300]
+      "position": [4870, 300]
     }
   ],
   "connections": {
@@ -402,15 +516,36 @@
       "main": [[{ "node": "Associer contact ↔ entreprise", "type": "main", "index": 0 }]]
     },
     "Associer contact ↔ entreprise": {
+      "main": [[{ "node": "Créer Deal Prospection", "type": "main", "index": 0 }]]
+    },
+    "Créer Deal Prospection": {
       "main": [[{ "node": "Notes présentes ?", "type": "main", "index": 0 }]]
     },
     "Notes présentes ?": {
       "main": [
         [{ "node": "Créer note HubSpot", "type": "main", "index": 0 }],
-        [{ "node": "Répondre succès", "type": "main", "index": 0 }]
+        [{ "node": "Tâche rappel ?", "type": "main", "index": 0 }]
       ]
     },
     "Créer note HubSpot": {
+      "main": [[{ "node": "Tâche rappel ?", "type": "main", "index": 0 }]]
+    },
+    "Tâche rappel ?": {
+      "main": [
+        [{ "node": "Créer tâche rappel J+3", "type": "main", "index": 0 }],
+        [{ "node": "RDV tâche ?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Créer tâche rappel J+3": {
+      "main": [[{ "node": "RDV tâche ?", "type": "main", "index": 0 }]]
+    },
+    "RDV tâche ?": {
+      "main": [
+        [{ "node": "Créer tâche RDV", "type": "main", "index": 0 }],
+        [{ "node": "Répondre succès", "type": "main", "index": 0 }]
+      ]
+    },
+    "Créer tâche RDV": {
       "main": [[{ "node": "Répondre succès", "type": "main", "index": 0 }]]
     }
   },
