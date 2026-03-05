@@ -1,5 +1,11 @@
 {
+  "updatedAt": "2026-03-05T15:30:16.381Z",
+  "createdAt": "2026-03-05T10:36:42.170Z",
+  "id": "slEyspRFX77Y31R4",
   "name": "[Formaxe] Decidento → HubSpot",
+  "description": null,
+  "active": true,
+  "isArchived": false,
   "nodes": [
     {
       "parameters": {
@@ -704,7 +710,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Get data from the flow\nconst item = $input.first().json;\nconst firstname = item.contact_firstname || '';\nconst companyName = item.company_name || '';\nconst contactEmail = item.contact_email || '';\nconst contactId = item.contact_id || '';\nconst rdvDate = item.rdv_date || '';\nconst sendConfirmation = item.send_confirmation_email === true || item.send_confirmation_email === 'true';\nconst sendOffer = item.send_offer_email === true || item.send_offer_email === 'true';\n\n// Format RDV date in French\nlet rdvDateFormatted = '';\nif (rdvDate) {\n  try {\n    const d = new Date(rdvDate);\n    const jours = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];\n    const mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];\n    rdvDateFormatted = `${jours[d.getDay()]} ${d.getDate()} ${mois[d.getMonth()]} ${d.getFullYear()} à ${d.getHours().toString().padStart(2,'0')}h${d.getMinutes().toString().padStart(2,'0')}`;\n  } catch(e) {\n    rdvDateFormatted = rdvDate;\n  }\n}\n\nconst rdvLine = rdvDateFormatted\n  ? `<p>Pour rappel, notre rendez-vous est prévu le <b>${rdvDateFormatted}</b>.</p>\\n`\n  : '';\n\nconst rdvLineText = rdvDateFormatted\n  ? `\\nPour rappel, notre rendez-vous est prévu le ${rdvDateFormatted}.\\n`\n  : '';\n\n// Placeholder signature — sera remplacée par le nœud \"Générer signature\"\nconst signaturePlaceholder = `<div style=\"margin-top:24px;padding-top:16px;border-top:1px solid #dadce0;font-family:Arial,sans-serif;font-size:13px;color:#555;line-height:1.5\">\n<b>%%COMMERCIAL_NAME%%</b><br>\n%%COMMERCIAL_TITLE%% | %%COMMERCIAL_COMPANY%%<br>\n%%COMMERCIAL_PHONE%%<br>\n<a href=\"mailto:%%COMMERCIAL_EMAIL%%\" style=\"color:#1a73e8;text-decoration:none\">%%COMMERCIAL_EMAIL%%</a><br>\n<a href=\"https://%%COMMERCIAL_WEBSITE%%\" style=\"color:#1a73e8;text-decoration:none\">%%COMMERCIAL_WEBSITE%%</a>\n</div>`;\n\n// =============================================\n// Email 1: Confirmation RDV + Présentation\n// =============================================\nconst email1_subject = \"Suite à notre échange — L'Atelier des Experts\";\n\nconst email1_html = `<div style=\"font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#222\">\n<p>Bonjour ${firstname},</p>\n\n<p>Encore merci pour votre temps et pour la prise de rendez-vous.</p>\n\n${rdvLine}<p>Pour vous présenter brièvement notre approche à L\\u2019Atelier des Experts, nous aidons les agences de communication à générer un chiffre d\\u2019affaires supplémentaire, tout en apportant un vrai levier de valeur à leurs clients, grâce à la formation professionnelle 100\\u00a0% financée.</p>\n\n<p>Voici ce que nous mettons en place pour vous :</p>\n\n<p>\\u2013 Une conseillère formation dédiée pour vous accompagner tout au long du partenariat<br>\n\\u2013 Le montage complet des dossiers, sans charge administrative pour vos équipes<br>\n\\u2013 Un service de renouvellement annuel pour proposer chaque année de nouvelles formations à vos clients<br>\n\\u2013 Une solution simple, fluide et entièrement prise en main de notre côté</p>\n\n<p>Je vous joins une brochure pour vous donner une vue d\\u2019ensemble de notre approche :<br>\n<a href=\"https://147594235.fs1.hubspotusercontent-eu1.net/hubfs/147594235/Brochure%20Agence-WEB.pdf\" style=\"color:#1a73e8\">Télécharger la brochure</a></p>\n\n<p>Bien cordialement,</p>\n\n${signaturePlaceholder}\n</div>`;\n\nconst email1_text = `Bonjour ${firstname},\n\nEncore merci pour votre temps et pour la prise de rendez-vous.\n${rdvLineText}\nPour vous présenter brièvement notre approche à L\\u2019Atelier des Experts, nous aidons les agences de communication à générer un chiffre d\\u2019affaires supplémentaire, tout en apportant un vrai levier de valeur à leurs clients, grâce à la formation professionnelle 100% financée.\n\nVoici ce que nous mettons en place pour vous :\n\n\\u2013 Une conseillère formation dédiée pour vous accompagner tout au long du partenariat\n\\u2013 Le montage complet des dossiers, sans charge administrative pour vos équipes\n\\u2013 Un service de renouvellement annuel pour proposer chaque année de nouvelles formations à vos clients\n\\u2013 Une solution simple, fluide et entièrement prise en main de notre côté\n\nBrochure : https://147594235.fs1.hubspotusercontent-eu1.net/hubfs/147594235/Brochure%20Agence-WEB.pdf\n\nBien cordialement,\n%%COMMERCIAL_NAME%%`;\n\n// =============================================\n// Email 2: Post-RDV / Contrat\n// =============================================\nconst email2_subject = \"Suite à notre rendez-vous — L'Atelier des Experts\";\n\nconst email2_html = `<div style=\"font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#222\">\n<p>Bonjour ${firstname},</p>\n\n<p>Merci pour notre échange, c\\u2019était un plaisir de faire votre connaissance et de découvrir plus en détail l\\u2019activité de ${companyName}.</p>\n\n<p>Comme convenu, je vais vous transmettre le contrat de partenariat via Yousign. Dès qu\\u2019il sera signé, je pourrai vous ouvrir votre accès sur la plateforme Stafy afin que vous puissiez commencer à déposer vos premiers dossiers.</p>\n\n<p>En travaillant avec L\\u2019Atelier des Experts, vous bénéficiez d\\u2019un centre de formation externalisé clé en main, conçu pour vous accompagner dans le développement de votre activité :</p>\n\n<p>\\u2013 Une conseillère dédiée pour vous accompagner au quotidien<br>\n\\u2013 Le closing de vos clients et prospects pour maximiser vos opportunités<br>\n\\u2013 Le montage complet des dossiers, avec gestion administrative et logistique<br>\n\\u2013 La prise en charge du financement et la récupération directe des paiements<br>\n\\u2013 Une avance de trésorerie, avec paiement de vos formations à 45 jours après leur fin<br>\n\\u2013 Un service de renouvellement automatique en début d\\u2019année pour sécuriser vos clients récurrents</p>\n\n<p>Je reste bien entendu disponible si vous avez la moindre question concernant le contrat ou la suite du processus.</p>\n\n<p>Au plaisir de concrétiser tout cela très prochainement,</p>\n\n<p>Bien cordialement,</p>\n\n${signaturePlaceholder}\n</div>`;\n\nconst email2_text = `Bonjour ${firstname},\n\nMerci pour notre échange, c\\u2019était un plaisir de faire votre connaissance et de découvrir plus en détail l\\u2019activité de ${companyName}.\n\nComme convenu, je vais vous transmettre le contrat de partenariat via Yousign. Dès qu\\u2019il sera signé, je pourrai vous ouvrir votre accès sur la plateforme Stafy afin que vous puissiez commencer à déposer vos premiers dossiers.\n\nEn travaillant avec L\\u2019Atelier des Experts, vous bénéficiez d\\u2019un centre de formation externalisé clé en main :\n\n\\u2013 Une conseillère dédiée pour vous accompagner au quotidien\n\\u2013 Le closing de vos clients et prospects pour maximiser vos opportunités\n\\u2013 Le montage complet des dossiers, avec gestion administrative et logistique\n\\u2013 La prise en charge du financement et la récupération directe des paiements\n\\u2013 Une avance de trésorerie, avec paiement de vos formations à 45 jours après leur fin\n\\u2013 Un service de renouvellement automatique en début d\\u2019année\n\nJe reste disponible si vous avez la moindre question.\n\nBien cordialement,\n%%COMMERCIAL_NAME%%`;\n\nreturn [{\n  json: {\n    ...item,\n    email1_subject, email1_html, email1_text,\n    email2_subject, email2_html, email2_text,\n    send_confirmation_email: sendConfirmation,\n    send_offer_email: sendOffer\n  }\n}];",
+        "jsCode": "// Get data from the flow\nconst item = $('Fusionner contact_id').first().json;\nconst firstname = item.contact_firstname || '';\nconst companyName = item.company_name || '';\nconst contactEmail = item.contact_email || '';\nconst contactId = item.contact_id || '';\nconst rdvDate = item.rdv_date || '';\nconst sendConfirmation = item.send_confirmation_email === true || item.send_confirmation_email === 'true';\nconst sendOffer = item.send_offer_email === true || item.send_offer_email === 'true';\n\n// Format RDV date in French\nlet rdvDateFormatted = '';\nif (rdvDate) {\n  try {\n    const d = new Date(rdvDate);\n    const jours = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];\n    const mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];\n    rdvDateFormatted = `${jours[d.getDay()]} ${d.getDate()} ${mois[d.getMonth()]} ${d.getFullYear()} à ${d.getHours().toString().padStart(2,'0')}h${d.getMinutes().toString().padStart(2,'0')}`;\n  } catch(e) {\n    rdvDateFormatted = rdvDate;\n  }\n}\n\nconst rdvLine = rdvDateFormatted\n  ? `<p>Pour rappel, notre rendez-vous est prévu le <b>${rdvDateFormatted}</b>.</p>\\n`\n  : '';\n\nconst rdvLineText = rdvDateFormatted\n  ? `\\nPour rappel, notre rendez-vous est prévu le ${rdvDateFormatted}.\\n`\n  : '';\n\n// Placeholder signature — sera remplacée par le nœud \"Générer signature\"\nconst signaturePlaceholder = `<div style=\"margin-top:24px;padding-top:16px;border-top:1px solid #dadce0;font-family:Arial,sans-serif;font-size:13px;color:#555;line-height:1.5\">\n<b>%%COMMERCIAL_NAME%%</b><br>\n%%COMMERCIAL_TITLE%% | %%COMMERCIAL_COMPANY%%<br>\n%%COMMERCIAL_PHONE%%<br>\n<a href=\"mailto:%%COMMERCIAL_EMAIL%%\" style=\"color:#1a73e8;text-decoration:none\">%%COMMERCIAL_EMAIL%%</a><br>\n<a href=\"https://%%COMMERCIAL_WEBSITE%%\" style=\"color:#1a73e8;text-decoration:none\">%%COMMERCIAL_WEBSITE%%</a>\n</div>`;\n\n// =============================================\n// Email 1: Confirmation RDV + Présentation\n// =============================================\nconst email1_subject = \"Suite à notre échange — L'Atelier des Experts\";\n\nconst email1_html = `<div style=\"font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#222\">\n<p>Bonjour ${firstname},</p>\n\n<p>Encore merci pour votre temps et pour la prise de rendez-vous.</p>\n\n${rdvLine}<p>Pour vous présenter brièvement notre approche à L\\u2019Atelier des Experts, nous aidons les agences de communication à générer un chiffre d\\u2019affaires supplémentaire, tout en apportant un vrai levier de valeur à leurs clients, grâce à la formation professionnelle 100\\u00a0% financée.</p>\n\n<p>Voici ce que nous mettons en place pour vous :</p>\n\n<p>\\u2013 Une conseillère formation dédiée pour vous accompagner tout au long du partenariat<br>\n\\u2013 Le montage complet des dossiers, sans charge administrative pour vos équipes<br>\n\\u2013 Un service de renouvellement annuel pour proposer chaque année de nouvelles formations à vos clients<br>\n\\u2013 Une solution simple, fluide et entièrement prise en main de notre côté</p>\n\n<p>Je vous joins une brochure pour vous donner une vue d\\u2019ensemble de notre approche :<br>\n<a href=\"https://147594235.fs1.hubspotusercontent-eu1.net/hubfs/147594235/Brochure%20Agence-WEB.pdf\" style=\"color:#1a73e8\">Télécharger la brochure</a></p>\n\n<p>Bien cordialement,</p>\n\n${signaturePlaceholder}\n</div>`;\n\nconst email1_text = `Bonjour ${firstname},\n\nEncore merci pour votre temps et pour la prise de rendez-vous.\n${rdvLineText}\nPour vous présenter brièvement notre approche à L\\u2019Atelier des Experts, nous aidons les agences de communication à générer un chiffre d\\u2019affaires supplémentaire, tout en apportant un vrai levier de valeur à leurs clients, grâce à la formation professionnelle 100% financée.\n\nVoici ce que nous mettons en place pour vous :\n\n\\u2013 Une conseillère formation dédiée pour vous accompagner tout au long du partenariat\n\\u2013 Le montage complet des dossiers, sans charge administrative pour vos équipes\n\\u2013 Un service de renouvellement annuel pour proposer chaque année de nouvelles formations à vos clients\n\\u2013 Une solution simple, fluide et entièrement prise en main de notre côté\n\nBrochure : https://147594235.fs1.hubspotusercontent-eu1.net/hubfs/147594235/Brochure%20Agence-WEB.pdf\n\nBien cordialement,\n%%COMMERCIAL_NAME%%`;\n\n// =============================================\n// Email 2: Post-RDV / Contrat\n// =============================================\nconst email2_subject = \"Suite à notre rendez-vous — L'Atelier des Experts\";\n\nconst email2_html = `<div style=\"font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#222\">\n<p>Bonjour ${firstname},</p>\n\n<p>Merci pour notre échange, c\\u2019était un plaisir de faire votre connaissance et de découvrir plus en détail l\\u2019activité de ${companyName}.</p>\n\n<p>Comme convenu, je vais vous transmettre le contrat de partenariat via Yousign. Dès qu\\u2019il sera signé, je pourrai vous ouvrir votre accès sur la plateforme Stafy afin que vous puissiez commencer à déposer vos premiers dossiers.</p>\n\n<p>En travaillant avec L\\u2019Atelier des Experts, vous bénéficiez d\\u2019un centre de formation externalisé clé en main, conçu pour vous accompagner dans le développement de votre activité :</p>\n\n<p>\\u2013 Une conseillère dédiée pour vous accompagner au quotidien<br>\n\\u2013 Le closing de vos clients et prospects pour maximiser vos opportunités<br>\n\\u2013 Le montage complet des dossiers, avec gestion administrative et logistique<br>\n\\u2013 La prise en charge du financement et la récupération directe des paiements<br>\n\\u2013 Une avance de trésorerie, avec paiement de vos formations à 45 jours après leur fin<br>\n\\u2013 Un service de renouvellement automatique en début d\\u2019année pour sécuriser vos clients récurrents</p>\n\n<p>Je reste bien entendu disponible si vous avez la moindre question concernant le contrat ou la suite du processus.</p>\n\n<p>Au plaisir de concrétiser tout cela très prochainement,</p>\n\n<p>Bien cordialement,</p>\n\n${signaturePlaceholder}\n</div>`;\n\nconst email2_text = `Bonjour ${firstname},\n\nMerci pour notre échange, c\\u2019était un plaisir de faire votre connaissance et de découvrir plus en détail l\\u2019activité de ${companyName}.\n\nComme convenu, je vais vous transmettre le contrat de partenariat via Yousign. Dès qu\\u2019il sera signé, je pourrai vous ouvrir votre accès sur la plateforme Stafy afin que vous puissiez commencer à déposer vos premiers dossiers.\n\nEn travaillant avec L\\u2019Atelier des Experts, vous bénéficiez d\\u2019un centre de formation externalisé clé en main :\n\n\\u2013 Une conseillère dédiée pour vous accompagner au quotidien\n\\u2013 Le closing de vos clients et prospects pour maximiser vos opportunités\n\\u2013 Le montage complet des dossiers, avec gestion administrative et logistique\n\\u2013 La prise en charge du financement et la récupération directe des paiements\n\\u2013 Une avance de trésorerie, avec paiement de vos formations à 45 jours après leur fin\n\\u2013 Un service de renouvellement automatique en début d\\u2019année\n\nJe reste disponible si vous avez la moindre question.\n\nBien cordialement,\n%%COMMERCIAL_NAME%%`;\n\nreturn [{\n  json: {\n    ...item,\n    email1_subject, email1_html, email1_text,\n    email2_subject, email2_html, email2_text,\n    send_confirmation_email: sendConfirmation,\n    send_offer_email: sendOffer\n  }\n}];",
         "mode": "runOnceForAllItems"
       },
       "name": "Préparer emails",
@@ -753,17 +759,24 @@
       "parameters": {
         "method": "POST",
         "url": "https://api.mailjet.com/v3.1/send",
+        "authentication": "none",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
               "name": "Authorization",
-              "value": "Basic ZDk1OTFlNjYyODNiYzBmMDM5ZWI2NzUyZDJhM2QyZDc6OTZmNTBlMTFlOTY5MjViMjg5YzUxNjQ5MmRjZDZjMTQ="
+              "value": "Basic OTA2NzQwOTViNDc1ZWNhYjM5MjFhNGQ0N2RkMTQ4NzE6OTZmNTBlMTFlOTY5MjViMjg5YzUxNjQ5MmRjZDZjMTQ="
             }
           ]
         },
-        "contentType": "application/json",
-        "body": "=JSON.stringify({\"Messages\":[{\"From\":{\"Email\":$json.commercial_email,\"Name\":$json.commercial_name},\"To\":[{\"Email\":$json.contact_email,\"Name\":$json.contact_firstname}],\"Subject\":$json.email1_subject,\"HTMLPart\":$json.email1_html,\"TextPart\":$json.email1_text,\"CustomID\":\"formaxe-conf-\"+$json.contact_id}]})"
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({Messages:[{From:{Email:\"contact@stafy.fr\",Name:$json.commercial_name},ReplyTo:{Email:$json.commercial_email,Name:$json.commercial_name},To:[{Email:$json.contact_email,Name:$json.contact_firstname}],Subject:$json.email1_subject,HTMLPart:$json.email1_html,TextPart:$json.email1_text,CustomID:\"formaxe-conf-\"+$json.contact_id}]}) }}",
+        "options": {}
       },
       "name": "Envoyer email confirmation",
       "type": "n8n-nodes-base.httpRequest",
@@ -783,7 +796,7 @@
         "nodeCredentialType": "hubspotOAuth2Api",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{\n JSON.stringify({\n  \"properties\": {\n    \"hs_email_direction\": \"EMAIL\",\n    \"hs_email_status\": \"SENT\",\n    \"hs_email_subject\": $json.email1_subject,\n    \"hs_email_text\": $json.email1_text,\n    \"hs_email_html\": $json.email1_html,\n    \"hs_timestamp\": $now.toISO(),\n    \"hs_email_sender_email\": $json.commercial_email,\n    \"hs_email_sender_firstname\": $json.commercial_name.split(\" \")[0],\n    \"hs_email_sender_lastname\": $json.commercial_name.split(\" \").slice(1).join(\" \"),\n    \"hs_email_to_email\": $json.contact_email,\n    \"hs_email_to_firstname\": $json.contact_firstname\n  },\n  \"associations\": [{\n    \"to\": { \"id\": $json.contact_id },\n    \"types\": [{ \"associationCategory\": \"HUBSPOT_DEFINED\", \"associationTypeId\": 198 }]\n  }]\n })\n}}",
+        "jsonBody": "={{ (() => { const d = $json; return JSON.stringify({ properties: { hs_email_direction: \"EMAIL\", hs_email_status: \"SENT\", hs_email_subject: d.email1_subject, hs_email_text: (d.email1_text || \"\").substring(0, 65535), hs_timestamp: new Date().toISOString(), hs_email_sender_email: d.commercial_email, hs_email_sender_firstname: (d.commercial_name || \"\").split(\" \")[0], hs_email_sender_lastname: (d.commercial_name || \"\").split(\" \").slice(1).join(\" \"), hs_email_to_email: d.contact_email, hs_email_to_firstname: d.contact_firstname }, associations: [{ to: { id: d.contact_id }, types: [{ associationCategory: \"HUBSPOT_DEFINED\", associationTypeId: 198 }] }] }); })() }}",
         "options": {}
       },
       "name": "Logger email 1 CRM",
@@ -842,17 +855,24 @@
       "parameters": {
         "method": "POST",
         "url": "https://api.mailjet.com/v3.1/send",
+        "authentication": "none",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
               "name": "Authorization",
-              "value": "Basic ZDk1OTFlNjYyODNiYzBmMDM5ZWI2NzUyZDJhM2QyZDc6OTZmNTBlMTFlOTY5MjViMjg5YzUxNjQ5MmRjZDZjMTQ="
+              "value": "Basic OTA2NzQwOTViNDc1ZWNhYjM5MjFhNGQ0N2RkMTQ4NzE6OTZmNTBlMTFlOTY5MjViMjg5YzUxNjQ5MmRjZDZjMTQ="
             }
           ]
         },
-        "contentType": "application/json",
-        "body": "=JSON.stringify({\"Messages\":[{\"From\":{\"Email\":$json.commercial_email,\"Name\":$json.commercial_name},\"To\":[{\"Email\":$json.contact_email,\"Name\":$json.contact_firstname}],\"Subject\":$json.email2_subject,\"HTMLPart\":$json.email2_html,\"TextPart\":$json.email2_text,\"CustomID\":\"formaxe-offer-\"+$json.contact_id}]})"
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({Messages:[{From:{Email:\"contact@stafy.fr\",Name:$json.commercial_name},ReplyTo:{Email:$json.commercial_email,Name:$json.commercial_name},To:[{Email:$json.contact_email,Name:$json.contact_firstname}],Subject:$json.email2_subject,HTMLPart:$json.email2_html,TextPart:$json.email2_text,CustomID:\"formaxe-offre-\"+$json.contact_id}]}) }}",
+        "options": {}
       },
       "name": "Envoyer email offre",
       "type": "n8n-nodes-base.httpRequest",
@@ -872,7 +892,7 @@
         "nodeCredentialType": "hubspotOAuth2Api",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{\n JSON.stringify({\n  \"properties\": {\n    \"hs_email_direction\": \"EMAIL\",\n    \"hs_email_status\": \"SENT\",\n    \"hs_email_subject\": $json.email2_subject,\n    \"hs_email_text\": $json.email2_text,\n    \"hs_email_html\": $json.email2_html,\n    \"hs_timestamp\": $now.toISO(),\n    \"hs_email_sender_email\": $json.commercial_email,\n    \"hs_email_sender_firstname\": $json.commercial_name.split(\" \")[0],\n    \"hs_email_sender_lastname\": $json.commercial_name.split(\" \").slice(1).join(\" \"),\n    \"hs_email_to_email\": $json.contact_email,\n    \"hs_email_to_firstname\": $json.contact_firstname\n  },\n  \"associations\": [{\n    \"to\": { \"id\": $json.contact_id },\n    \"types\": [{ \"associationCategory\": \"HUBSPOT_DEFINED\", \"associationTypeId\": 198 }]\n  }]\n })\n}}",
+        "jsonBody": "={{ (() => { const d = $json; return JSON.stringify({ properties: { hs_email_direction: \"EMAIL\", hs_email_status: \"SENT\", hs_email_subject: d.email2_subject, hs_email_text: (d.email2_text || \"\").substring(0, 65535), hs_timestamp: new Date().toISOString(), hs_email_sender_email: d.commercial_email, hs_email_sender_firstname: (d.commercial_name || \"\").split(\" \")[0], hs_email_sender_lastname: (d.commercial_name || \"\").split(\" \").slice(1).join(\" \"), hs_email_to_email: d.contact_email, hs_email_to_firstname: d.contact_firstname }, associations: [{ to: { id: d.contact_id }, types: [{ associationCategory: \"HUBSPOT_DEFINED\", associationTypeId: 198 }] }] }); })() }}",
         "options": {}
       },
       "name": "Logger email 2 CRM",
@@ -897,7 +917,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "={{ 'https://api.hubapi.com/crm/v3/owners/' + $json.owner_id }}",
+        "url": "={{ 'https://api.hubapi.com/crm/v3/owners/' + $('Résoudre owner ID').first().json.owner_id }}",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "hubspotOAuth2Api",
         "options": {
@@ -929,7 +949,7 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "// Annuaire complémentaire des commerciaux\n// Pour ajouter un nouveau commercial : ajouter une entrée avec son owner_id HubSpot\nconst ANNUAIRE = {\n  '80222699': {  // Louis PREZEAU\n    title: 'Commercial Partenaires',\n    company: \"Atelier des Experts\\u00a9\",\n    phone: '01 84 75 47 20',\n    bookingUrl: 'https://meetings.hubspot.com/louis-prezeau'\n  },\n  '51816547': {  // Baptiste Cordier\n    title: 'Commercial',\n    company: \"Atelier des Experts\\u00a9\",\n    phone: '01 23 45 67 89',\n    bookingUrl: 'https://meetings.hubspot.com/baptiste-cordier'\n  },\n  '31958923': {  // Liam Gaillard\n    title: 'Commercial',\n    company: \"Atelier des Experts\\u00a9\",\n    phone: '01 84 75 47 20',\n    bookingUrl: 'https://meetings.hubspot.com/liam-gaillard'\n  },\n  '52585251': {  // Héla\n    title: 'Chargée de développement',\n    company: \"Atelier des Experts\\u00a9\",\n    phone: '01 84 75 47 20',\n    bookingUrl: 'https://meetings.hubspot.com/hela-formaxe'\n  },\n  '80309654': {  // Carine\n    title: 'Chargée de développement',\n    company: \"Atelier des Experts\\u00a9\",\n    phone: '01 84 75 47 20',\n    bookingUrl: 'https://meetings.hubspot.com/carine-formaxe'\n  }\n};\n\nconst DEFAULT_INFO = {\n  title: 'Commercial',\n  company: \"Atelier des Experts\\u00a9\",\n  phone: '01 84 75 47 20',\n  bookingUrl: 'https://meetings.hubspot.com/atelier-des-experts'\n};\n\n// Données du flow\nconst prevData = $('Préparer emails').first().json;\nconst ownerResponse = $('Récupérer owner HubSpot').first().json;\nconst ownerBody = ownerResponse.body || ownerResponse;\n\nconst ownerId = prevData.owner_id || '';\nconst ownerFirstName = ownerBody.firstName || '';\nconst ownerLastName = ownerBody.lastName || '';\nconst ownerEmail = ownerBody.email || '';\nconst ownerName = `${ownerFirstName} ${ownerLastName}`.trim();\n\n// Fusionner HubSpot owner + annuaire complémentaire\nconst extra = ANNUAIRE[ownerId] || DEFAULT_INFO;\n\nconst sig = {\n  name: ownerName || \"L'Atelier des Experts\",\n  title: extra.title,\n  company: extra.company,\n  phone: extra.phone,\n  email: ownerEmail || 'contact@atelierdesexperts.fr',\n  website: 'atelierdesexperts.fr',\n  bookingUrl: extra.bookingUrl\n};\n\n// Générer le HTML de signature (style Gmail)\nconst signatureHtml = `<div style=\"margin-top:24px;padding-top:16px;border-top:1px solid #dadce0;font-family:Arial,sans-serif;font-size:13px;color:#555;line-height:1.5\">\n<b>${sig.name}</b><br>\n${sig.title} | ${sig.company}<br>\n${sig.phone}<br>\n<a href=\"mailto:${sig.email}\" style=\"color:#1a73e8;text-decoration:none\">${sig.email}</a><br>\n<a href=\"https://${sig.website}\" style=\"color:#1a73e8;text-decoration:none\">${sig.website}</a>\n</div>`;\n\n// Remplacer les placeholders %%...%% dans les emails\nfunction replacePlaceholders(text) {\n  return text\n    .replace(/%%COMMERCIAL_NAME%%/g, sig.name)\n    .replace(/%%COMMERCIAL_TITLE%%/g, sig.title)\n    .replace(/%%COMMERCIAL_COMPANY%%/g, sig.company)\n    .replace(/%%COMMERCIAL_PHONE%%/g, sig.phone)\n    .replace(/%%COMMERCIAL_EMAIL%%/g, sig.email)\n    .replace(/%%COMMERCIAL_WEBSITE%%/g, sig.website);\n}\n\nconst email1_html = replacePlaceholders(prevData.email1_html || '');\nconst email1_text = replacePlaceholders(prevData.email1_text || '');\nconst email2_html = replacePlaceholders(prevData.email2_html || '');\nconst email2_text = replacePlaceholders(prevData.email2_text || '');\n\nreturn [{\n  json: {\n    ...prevData,\n    commercial_name: sig.name,\n    commercial_email: sig.email,\n    commercial_title: sig.title,\n    commercial_phone: sig.phone,\n    commercial_website: sig.website,\n    booking_url: sig.bookingUrl,\n    signature_html: signatureHtml,\n    email1_html,\n    email1_text,\n    email2_html,\n    email2_text\n  }\n}];"
+        "jsCode": "// Annuaire complémentaire des commerciaux\n// Pour ajouter un nouveau commercial : ajouter une entrée avec son owner_id HubSpot\nconst ANNUAIRE = {\n  '80222699': {  // Louis PREZEAU\n    title: 'Commercial Partenaires',\n    company: \"Atelier des Experts\\u00a9\",\n    phone: '01 84 75 47 20',\n    bookingUrl: 'https://meetings.hubspot.com/louis-prezeau'\n  },\n  '51816547': {  // Baptiste Cordier\n    title: 'Commercial',\n    company: \"Atelier des Experts\\u00a9\",\n    phone: '01 23 45 67 89',\n    bookingUrl: 'https://meetings.hubspot.com/baptiste-cordier'\n  },\n  '31958923': {  // Liam Gaillard\n    title: 'Commercial',\n    company: \"Atelier des Experts\\u00a9\",\n    phone: '01 84 75 47 20',\n    bookingUrl: 'https://meetings.hubspot.com/liam-gaillard'\n  },\n  '52585251': {  // Héla\n    title: 'Chargée de développement',\n    company: \"Atelier des Experts\\u00a9\",\n    phone: '01 84 75 47 20',\n    bookingUrl: 'https://meetings.hubspot.com/hela-formaxe'\n  },\n  '80309654': {  // Carine\n    title: 'Chargée de développement',\n    company: \"Atelier des Experts\\u00a9\",\n    phone: '01 84 75 47 20',\n    bookingUrl: 'https://meetings.hubspot.com/carine-formaxe'\n  }\n};\n\nconst DEFAULT_INFO = {\n  title: 'Commercial',\n  company: \"Atelier des Experts\\u00a9\",\n  phone: '01 84 75 47 20',\n  bookingUrl: 'https://meetings.hubspot.com/atelier-des-experts'\n};\n\n// Données du flow\nconst prevData = $('Préparer emails').first().json;\nconst ownerResponse = $('Récupérer owner HubSpot').first().json;\nconst ownerBody = ownerResponse.body || ownerResponse;\n\nconst ownerId = $('Résoudre owner ID').first().json.owner_id || '';\nconst ownerFirstName = ownerBody.firstName || '';\nconst ownerLastName = ownerBody.lastName || '';\nconst ownerEmail = ownerBody.email || '';\nconst ownerName = `${ownerFirstName} ${ownerLastName}`.trim();\n\n// Fusionner HubSpot owner + annuaire complémentaire\nconst extra = ANNUAIRE[ownerId] || DEFAULT_INFO;\n\nconst sig = {\n  name: ownerName || \"L'Atelier des Experts\",\n  title: extra.title,\n  company: extra.company,\n  phone: extra.phone,\n  email: ownerEmail || 'contact@atelierdesexperts.fr',\n  website: 'atelierdesexperts.fr',\n  bookingUrl: extra.bookingUrl\n};\n\n// Générer le HTML de signature (style Gmail)\nconst signatureHtml = `<div style=\"margin-top:24px;padding-top:16px;border-top:1px solid #dadce0;font-family:Arial,sans-serif;font-size:13px;color:#555;line-height:1.5\">\n<b>${sig.name}</b><br>\n${sig.title} | ${sig.company}<br>\n${sig.phone}<br>\n<a href=\"mailto:${sig.email}\" style=\"color:#1a73e8;text-decoration:none\">${sig.email}</a><br>\n<a href=\"https://${sig.website}\" style=\"color:#1a73e8;text-decoration:none\">${sig.website}</a>\n</div>`;\n\n// Remplacer les placeholders %%...%% dans les emails\nfunction replacePlaceholders(text) {\n  return text\n    .replace(/%%COMMERCIAL_NAME%%/g, sig.name)\n    .replace(/%%COMMERCIAL_TITLE%%/g, sig.title)\n    .replace(/%%COMMERCIAL_COMPANY%%/g, sig.company)\n    .replace(/%%COMMERCIAL_PHONE%%/g, sig.phone)\n    .replace(/%%COMMERCIAL_EMAIL%%/g, sig.email)\n    .replace(/%%COMMERCIAL_WEBSITE%%/g, sig.website);\n}\n\nconst email1_html = replacePlaceholders(prevData.email1_html || '');\nconst email1_text = replacePlaceholders(prevData.email1_text || '');\nconst email2_html = replacePlaceholders(prevData.email2_html || '');\nconst email2_text = replacePlaceholders(prevData.email2_text || '');\n\nreturn [{\n  json: {\n    ...prevData,\n    commercial_name: sig.name,\n    commercial_email: sig.email,\n    commercial_title: sig.title,\n    commercial_phone: sig.phone,\n    commercial_website: sig.website,\n    booking_url: sig.bookingUrl,\n    signature_html: signatureHtml,\n    email1_html,\n    email1_text,\n    email2_html,\n    email2_text\n  }\n}];"
       },
       "id": "sig-0002-0002-4000-8000-000000000002",
       "name": "Générer signature",
@@ -1350,6 +1370,1429 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "3RAntHwbH4vmj5o7",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "beea8323-e3f3-46e9-af72-c8d75d67e73c",
+  "activeVersionId": "beea8323-e3f3-46e9-af72-c8d75d67e73c",
+  "versionCounter": 104,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-05T10:36:42.171Z",
+      "createdAt": "2026-03-05T10:36:42.171Z",
+      "role": "workflow:owner",
+      "workflowId": "slEyspRFX77Y31R4",
+      "projectId": "RBe2LPhhxvicS0C6",
+      "project": {
+        "updatedAt": "2026-01-19T14:30:42.203Z",
+        "createdAt": "2026-01-19T10:15:05.970Z",
+        "id": "RBe2LPhhxvicS0C6",
+        "name": "Baptiste  C <baptiste@garsen.fr>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "e6335865-545b-46a2-baad-da60cc327852"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-03-05T15:30:16.382Z",
+    "createdAt": "2026-03-05T15:30:16.382Z",
+    "versionId": "beea8323-e3f3-46e9-af72-c8d75d67e73c",
+    "workflowId": "slEyspRFX77Y31R4",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "decidento",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "d1a1a1a1-0001-4000-8000-000000000001",
+        "name": "Webhook Decidento",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          250,
+          300
+        ],
+        "webhookId": "100c15f6-3a8a-4d5f-9e70-b27011d1c1aa"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "// Préparer les données du webhook\nconst body = $input.first().json.body;\nconst contact = body.contact || {};\nconst company = body.company || {};\n\n// Séparer prénom / nom\nconst nameParts = (contact.name || '').trim().split(/\\s+/);\nconst lastname = nameParts.pop() || '';\nconst firstname = nameParts.join(' ') || '';\n\n// Mapper le statut vers la valeur enum HubSpot\nconst statusMap = {\n  'Message vocal laissé': 'message_vocal_laisse',\n  'Email envoyé': 'email_envoye',\n  'Injoignable': 'injoignable',\n  'Rendez-vous pris': 'rendez_vous_pris',\n  'Ne plus rappeler': 'ne_plus_rappeler',\n  'Déjà appelé': 'deja_appele',\n  'Pas intéressé': 'pas_interesse',\n  'Déjà en partenariat': 'deja_en_partenariat',\n  'A raccroché': 'a_raccroche'\n};\n\n// Mapping statut → pipeline stage ID\nconst stageMap = {\n  'Message vocal laissé': '4978411760',\n  'Email envoyé': '4978411760',\n  'Injoignable': '4978411760',\n  'Rendez-vous pris': '4978411762',\n  'Ne plus rappeler': '4978411766',\n  'Déjà appelé': '4978411761',\n  'Pas intéressé': '4978411766',\n  'Déjà en partenariat': '4978411766',\n  'A raccroché': '4978411760'\n};\n\n// Générer dynamiquement la valeur enum du commercial (snake_case normalisé)\nfunction toSnakeCase(name) {\n  return (name || '').trim().toLowerCase()\n    .normalize('NFD').replace(/[\\u0300-\\u036f]/g, '')\n    .replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');\n}\n\nreturn [{\n  json: {\n    contact_firstname: firstname,\n    contact_lastname: lastname,\n    contact_email: contact.email || '',\n    contact_phone: contact.phone || '',\n    contact_position: contact.position || '',\n    contact_title_tag: contact.title_tag || '',\n    contact_linkedin: contact.linkedin_url || '',\n    contact_address: contact.address || '',\n    notes: body.notes || '',\n    company_name: company.name || '',\n    company_address: company.address || '',\n    company_phone: company.phone || '',\n    company_website: company.website || '',\n    siren: company.siren || '',\n    siret: company.siret || '',\n    type_entreprise: company.type_entreprise || '',\n    effectif: company.effectif || '',\n    chiffre_affaires: company.chiffre_affaires || '',\n    capital_social: company.capital_social || '',\n    forme_juridique: company.forme_juridique || '',\n    numero_tva: company.numero_tva || '',\n    convention_collective: company.convention_collective || '',\n    status_raw: body.status || '',\n    status_enum: statusMap[body.status] || body.status || '',\n    pipeline_stage_id: stageMap[body.status] || '4978411759',\n    commercial_raw: body.commercial || '',\n    commercial_enum: toSnakeCase(body.commercial),\n    source_url: body.source_url || '',\n    timestamp: body.timestamp || new Date().toISOString(),\n    decidento_contact_id: body.decidento_contact_id || '',\n    rdv_date: body.rdv_date || '',\n    send_confirmation_email: body.send_confirmation_email || false,\n    send_offer_email: body.send_offer_email || false\n  }\n}];"
+        },
+        "id": "d1a1a1a1-0002-4000-8000-000000000002",
+        "name": "Préparer les données",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          470,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "method": "GET",
+          "url": "https://api.hubapi.com/crm/v3/owners",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotOAuth2Api",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "limit",
+                "value": "100"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true
+              }
+            }
+          }
+        },
+        "id": "d1a1a1a1-0012-4000-8000-000000000012",
+        "name": "Chercher owners HubSpot",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          690,
+          300
+        ],
+        "credentials": {
+          "hubspotOAuth2Api": {
+            "id": "u2JYQLBBKAkG4wic",
+            "name": "Formaxe"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "// Résoudre le owner ID dynamiquement depuis la liste des owners HubSpot\nconst data = $('Préparer les données').first().json;\nconst ownersResponse = $('Chercher owners HubSpot').first().json;\nconst owners = (ownersResponse.body && ownersResponse.body.results) || [];\nconst commercialName = data.commercial_raw || '';\n\n// Chercher le owner par nom (prénom + nom)\nlet ownerId = '';\nif (commercialName) {\n  const normalizedSearch = commercialName.toLowerCase().trim();\n  const match = owners.find(o => {\n    const fullName = ((o.firstName || '') + ' ' + (o.lastName || '')).toLowerCase().trim();\n    return fullName === normalizedSearch;\n  });\n  if (match) {\n    ownerId = match.id || '';\n  }\n}\n\nreturn [{\n  json: {\n    ...data,\n    owner_id: ownerId\n  }\n}];"
+        },
+        "id": "d1a1a1a1-0013-4000-8000-000000000013",
+        "name": "Résoudre owner ID",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          910,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.hubapi.com/crm/v3/objects/companies/search",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ filterGroups: [{ filters: [{ propertyName: 'siren', operator: 'EQ', value: $json.siren }] }], properties: ['name', 'siren'], limit: 1 }) }}",
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true
+              }
+            }
+          }
+        },
+        "id": "d1a1a1a1-0003-4000-8000-000000000003",
+        "name": "Chercher entreprise par SIREN",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1130,
+          300
+        ],
+        "credentials": {
+          "hubspotOAuth2Api": {
+            "id": "u2JYQLBBKAkG4wic",
+            "name": "Formaxe"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose"
+            },
+            "conditions": [
+              {
+                "id": "check-total",
+                "leftValue": "={{ $json.body.total }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "number",
+                  "operation": "gt"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {
+            "looseTypeValidation": true
+          }
+        },
+        "id": "d1a1a1a1-0004-4000-8000-000000000004",
+        "name": "Entreprise existe ?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          1350,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "cid-existing",
+                "name": "company_id",
+                "value": "={{ $json.body.results[0].id }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "d1a1a1a1-0005-4000-8000-000000000005",
+        "name": "ID entreprise existante",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1570,
+          180
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.hubapi.com/crm/v3/objects/companies",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ (() => { const d = $('Résoudre owner ID').item.json; const props = { name: d.company_name, phone: d.company_phone, website: d.company_website, address: d.company_address, siren: d.siren, siret_siege: d.siret, type_entreprise: d.type_entreprise, numero_tva: d.numero_tva, capital_social: d.capital_social, forme_juridique: d.forme_juridique, ca_decidento: d.chiffre_affaires, effectif_decidento: d.effectif, convention_collective: d.convention_collective, source_decidento_url: d.source_url }; if (d.owner_id) props.hubspot_owner_id = d.owner_id; return JSON.stringify({ properties: props }); })() }}",
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true
+              }
+            }
+          }
+        },
+        "id": "d1a1a1a1-0006-4000-8000-000000000006",
+        "name": "Créer entreprise",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1570,
+          420
+        ],
+        "credentials": {
+          "hubspotOAuth2Api": {
+            "id": "u2JYQLBBKAkG4wic",
+            "name": "Formaxe"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "cid-new",
+                "name": "company_id",
+                "value": "={{ $json.body.id }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "d1a1a1a1-0007-4000-8000-000000000007",
+        "name": "ID nouvelle entreprise",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1790,
+          420
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "// Merge : récupérer le company_id quel que soit le chemin (existante ou nouvelle)\nconst data = $('Résoudre owner ID').first().json;\n\nlet companyId = '';\ntry { companyId = $('ID entreprise existante').first().json.company_id; } catch(e) {}\nif (!companyId) {\n  try { companyId = $('ID nouvelle entreprise').first().json.company_id; } catch(e) {}\n}\n\nreturn [{ json: { ...data, company_id: companyId } }];"
+        },
+        "id": "d1a1a1a1-0008-4000-8000-000000000008",
+        "name": "Fusionner company_id",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2010,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.hubapi.com/crm/v3/objects/contacts/search",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ filterGroups: [{ filters: [{ propertyName: 'decidento_contact_id', operator: 'EQ', value: $json.decidento_contact_id }] }], properties: ['firstname', 'lastname', 'decidento_contact_id', 'statut_prospection_decidento'], limit: 1 }) }}",
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true
+              }
+            }
+          }
+        },
+        "id": "d1a1a1a1-0020-4000-8000-000000000020",
+        "name": "Chercher contact existant",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2230,
+          300
+        ],
+        "credentials": {
+          "hubspotOAuth2Api": {
+            "id": "u2JYQLBBKAkG4wic",
+            "name": "Formaxe"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose"
+            },
+            "conditions": [
+              {
+                "id": "check-contact-total",
+                "leftValue": "={{ $json.body.total }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "number",
+                  "operation": "gt"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {
+            "looseTypeValidation": true
+          }
+        },
+        "id": "d1a1a1a1-0021-4000-8000-000000000021",
+        "name": "Contact existe ?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          2450,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "={{ 'https://api.hubapi.com/crm/v3/objects/contacts/' + $json.body.results[0].id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ (() => { const d = $('Fusionner company_id').first().json; const props = { firstname: d.contact_firstname, lastname: d.contact_lastname, jobtitle: d.contact_position, address: d.contact_address, titre_decidento: d.contact_title_tag, statut_prospection_decidento: d.status_enum, commercial_decidento: d.commercial_enum, source_decidento_url: d.source_url, decidento_contact_id: d.decidento_contact_id }; if (d.contact_phone) props.phone = d.contact_phone; if (d.contact_linkedin) props.hs_linkedin_url = d.contact_linkedin; if (d.owner_id) props.hubspot_owner_id = d.owner_id; return JSON.stringify({ properties: props }); })() }}",
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true
+              }
+            }
+          }
+        },
+        "id": "d1a1a1a1-0022-4000-8000-000000000022",
+        "name": "Mettre à jour contact",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2670,
+          180
+        ],
+        "credentials": {
+          "hubspotOAuth2Api": {
+            "id": "u2JYQLBBKAkG4wic",
+            "name": "Formaxe"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.hubapi.com/crm/v3/objects/contacts",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ (() => { const d = $('Fusionner company_id').first().json; const props = { firstname: d.contact_firstname, lastname: d.contact_lastname, jobtitle: d.contact_position, address: d.contact_address, titre_decidento: d.contact_title_tag, statut_prospection_decidento: d.status_enum, commercial_decidento: d.commercial_enum, source_decidento_url: d.source_url, decidento_contact_id: d.decidento_contact_id }; if (d.contact_email) props.email = d.contact_email; if (d.contact_phone) props.phone = d.contact_phone; if (d.contact_linkedin) props.hs_linkedin_url = d.contact_linkedin; if (d.owner_id) props.hubspot_owner_id = d.owner_id; return JSON.stringify({ properties: props }); })() }}",
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true
+              }
+            }
+          }
+        },
+        "id": "d1a1a1a1-0023-4000-8000-000000000023",
+        "name": "Créer contact HubSpot",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2670,
+          420
+        ],
+        "credentials": {
+          "hubspotOAuth2Api": {
+            "id": "u2JYQLBBKAkG4wic",
+            "name": "Formaxe"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "// Récupérer le contact_id quel que soit le chemin (update ou create)\nconst data = $('Fusionner company_id').first().json;\n\nlet contactId = '';\nlet action = '';\ntry {\n  contactId = $('Mettre à jour contact').first().json.body.id;\n  action = 'updated';\n} catch(e) {}\nif (!contactId) {\n  try {\n    contactId = $('Créer contact HubSpot').first().json.body.id;\n    action = 'created';\n  } catch(e) {}\n}\n\nreturn [{ json: { ...data, contact_id: contactId, contact_action: action } }];"
+        },
+        "id": "d1a1a1a1-0024-4000-8000-000000000024",
+        "name": "Fusionner contact_id",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2890,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "method": "PUT",
+          "url": "={{ 'https://api.hubapi.com/crm/v4/objects/contacts/' + $json.contact_id + '/associations/companies/' + $json.company_id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "[{\"associationCategory\": \"HUBSPOT_DEFINED\", \"associationTypeId\": 279}]",
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true
+              }
+            }
+          }
+        },
+        "id": "d1a1a1a1-0010-4000-8000-000000000010",
+        "name": "Associer contact ↔ entreprise",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3110,
+          300
+        ],
+        "credentials": {
+          "hubspotOAuth2Api": {
+            "id": "u2JYQLBBKAkG4wic",
+            "name": "Formaxe"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.hubapi.com/crm/v3/objects/deals",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ (() => { const d = $('Fusionner contact_id').first().json; const dealname = (d.contact_firstname + ' ' + d.contact_lastname).trim() + ' — ' + (d.company_name || ''); const props = { dealname: dealname, pipeline: '3625113819', dealstage: d.pipeline_stage_id || '4978411759' }; if (d.owner_id) props.hubspot_owner_id = d.owner_id; const associations = []; if (d.contact_id) associations.push({ to: { id: parseInt(d.contact_id) }, types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 3 }] }); if (d.company_id) associations.push({ to: { id: parseInt(d.company_id) }, types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 341 }] }); return JSON.stringify({ properties: props, associations: associations }); })() }}",
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true
+              }
+            }
+          }
+        },
+        "id": "d1a1a1a1-0040-4000-8000-000000000040",
+        "name": "Créer Deal Prospection",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3330,
+          300
+        ],
+        "credentials": {
+          "hubspotOAuth2Api": {
+            "id": "u2JYQLBBKAkG4wic",
+            "name": "Formaxe"
+          }
+        },
+        "onError": "continueRegularOutput",
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose"
+            },
+            "conditions": [
+              {
+                "id": "check-notes",
+                "leftValue": "={{ $('Fusionner contact_id').first().json.notes }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEquals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {
+            "looseTypeValidation": true
+          }
+        },
+        "id": "d1a1a1a1-0030-4000-8000-000000000030",
+        "name": "Notes présentes ?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          3550,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.hubapi.com/crm/v3/objects/notes",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ (() => { const d = $('Fusionner contact_id').first().json; const statusLabel = d.status_raw || ''; const commercial = d.commercial_raw || ''; const ts = d.timestamp ? new Date(d.timestamp).toLocaleString('fr-FR') : ''; const header = '📞 Appel Decidento — ' + statusLabel; const meta = []; if (commercial) meta.push('Commercial : ' + commercial); if (ts) meta.push('Date : ' + ts); const body = header + '\\n' + meta.join(' | ') + '\\n\\n' + d.notes; return JSON.stringify({ properties: { hs_note_body: body, hs_timestamp: d.timestamp || new Date().toISOString() }, associations: [{ to: { id: d.contact_id }, types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 202 }] }] }); })() }}",
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true
+              }
+            }
+          }
+        },
+        "id": "d1a1a1a1-0031-4000-8000-000000000031",
+        "name": "Créer note HubSpot",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3770,
+          180
+        ],
+        "credentials": {
+          "hubspotOAuth2Api": {
+            "id": "u2JYQLBBKAkG4wic",
+            "name": "Formaxe"
+          }
+        },
+        "onError": "continueRegularOutput",
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose"
+            },
+            "conditions": [
+              {
+                "id": "check-reminder-task",
+                "leftValue": "={{ ['message_vocal_laisse', 'injoignable', 'email_envoye'].includes($('Fusionner contact_id').first().json.status_enum) }}",
+                "rightValue": "true",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {
+            "looseTypeValidation": true
+          }
+        },
+        "id": "d1a1a1a1-0041-4000-8000-000000000041",
+        "name": "Tâche rappel ?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          3990,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.hubapi.com/crm/v3/objects/tasks",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ (() => { const d = $('Fusionner contact_id').first().json; const dueDate = new Date(); dueDate.setDate(dueDate.getDate() + 3); const props = { hs_task_subject: 'Rappeler ' + d.contact_firstname + ' ' + d.contact_lastname + ' (' + d.company_name + ')', hs_task_body: 'Rappel automatique suite au statut : ' + d.status_raw + '\\nContact envoyé depuis Decidento le ' + new Date(d.timestamp).toLocaleDateString('fr-FR'), hs_task_status: 'NOT_STARTED', hs_task_priority: 'MEDIUM', hs_timestamp: dueDate.toISOString() }; if (d.owner_id) props.hubspot_owner_id = d.owner_id; return JSON.stringify({ properties: props, associations: [{ to: { id: parseInt(d.contact_id) }, types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 204 }] }] }); })() }}",
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true
+              }
+            }
+          }
+        },
+        "id": "d1a1a1a1-0042-4000-8000-000000000042",
+        "name": "Créer tâche rappel J+3",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4210,
+          180
+        ],
+        "credentials": {
+          "hubspotOAuth2Api": {
+            "id": "u2JYQLBBKAkG4wic",
+            "name": "Formaxe"
+          }
+        },
+        "onError": "continueRegularOutput",
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose"
+            },
+            "conditions": [
+              {
+                "id": "check-rdv-task",
+                "leftValue": "={{ $('Fusionner contact_id').first().json.rdv_date }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEquals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {
+            "looseTypeValidation": true
+          }
+        },
+        "id": "d1a1a1a1-0043-4000-8000-000000000043",
+        "name": "RDV tâche ?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          4430,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.hubapi.com/crm/v3/objects/tasks",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ (() => { const d = $('Fusionner contact_id').first().json; const rdvDate = new Date(d.rdv_date); const props = { hs_task_subject: 'RDV avec ' + d.contact_firstname + ' ' + d.contact_lastname + ' (' + d.company_name + ')', hs_task_body: 'Rendez-vous planifié depuis Decidento\\nDate : ' + rdvDate.toLocaleString('fr-FR') + '\\nCommercial : ' + d.commercial_raw, hs_task_status: 'NOT_STARTED', hs_task_priority: 'HIGH', hs_timestamp: rdvDate.toISOString() }; if (d.owner_id) props.hubspot_owner_id = d.owner_id; return JSON.stringify({ properties: props, associations: [{ to: { id: parseInt(d.contact_id) }, types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 204 }] }] }); })() }}",
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true
+              }
+            }
+          }
+        },
+        "id": "d1a1a1a1-0044-4000-8000-000000000044",
+        "name": "Créer tâche RDV",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4650,
+          180
+        ],
+        "credentials": {
+          "hubspotOAuth2Api": {
+            "id": "u2JYQLBBKAkG4wic",
+            "name": "Formaxe"
+          }
+        },
+        "onError": "continueRegularOutput",
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ JSON.stringify({ success: true, contact_id: $json.contact_id, company_name: $json.company_name, deal_created: true, emails_sent: { confirmation: $json.send_confirmation_email, offer: $json.send_offer_email } }) }}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "id": "d1a1a1a1-0011-4000-8000-000000000011",
+        "name": "Répondre succès",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          6410,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Get data from the flow\nconst item = $('Fusionner contact_id').first().json;\nconst firstname = item.contact_firstname || '';\nconst companyName = item.company_name || '';\nconst contactEmail = item.contact_email || '';\nconst contactId = item.contact_id || '';\nconst rdvDate = item.rdv_date || '';\nconst sendConfirmation = item.send_confirmation_email === true || item.send_confirmation_email === 'true';\nconst sendOffer = item.send_offer_email === true || item.send_offer_email === 'true';\n\n// Format RDV date in French\nlet rdvDateFormatted = '';\nif (rdvDate) {\n  try {\n    const d = new Date(rdvDate);\n    const jours = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];\n    const mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];\n    rdvDateFormatted = `${jours[d.getDay()]} ${d.getDate()} ${mois[d.getMonth()]} ${d.getFullYear()} à ${d.getHours().toString().padStart(2,'0')}h${d.getMinutes().toString().padStart(2,'0')}`;\n  } catch(e) {\n    rdvDateFormatted = rdvDate;\n  }\n}\n\nconst rdvLine = rdvDateFormatted\n  ? `<p>Pour rappel, notre rendez-vous est prévu le <b>${rdvDateFormatted}</b>.</p>\\n`\n  : '';\n\nconst rdvLineText = rdvDateFormatted\n  ? `\\nPour rappel, notre rendez-vous est prévu le ${rdvDateFormatted}.\\n`\n  : '';\n\n// Placeholder signature — sera remplacée par le nœud \"Générer signature\"\nconst signaturePlaceholder = `<div style=\"margin-top:24px;padding-top:16px;border-top:1px solid #dadce0;font-family:Arial,sans-serif;font-size:13px;color:#555;line-height:1.5\">\n<b>%%COMMERCIAL_NAME%%</b><br>\n%%COMMERCIAL_TITLE%% | %%COMMERCIAL_COMPANY%%<br>\n%%COMMERCIAL_PHONE%%<br>\n<a href=\"mailto:%%COMMERCIAL_EMAIL%%\" style=\"color:#1a73e8;text-decoration:none\">%%COMMERCIAL_EMAIL%%</a><br>\n<a href=\"https://%%COMMERCIAL_WEBSITE%%\" style=\"color:#1a73e8;text-decoration:none\">%%COMMERCIAL_WEBSITE%%</a>\n</div>`;\n\n// =============================================\n// Email 1: Confirmation RDV + Présentation\n// =============================================\nconst email1_subject = \"Suite à notre échange — L'Atelier des Experts\";\n\nconst email1_html = `<div style=\"font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#222\">\n<p>Bonjour ${firstname},</p>\n\n<p>Encore merci pour votre temps et pour la prise de rendez-vous.</p>\n\n${rdvLine}<p>Pour vous présenter brièvement notre approche à L\\u2019Atelier des Experts, nous aidons les agences de communication à générer un chiffre d\\u2019affaires supplémentaire, tout en apportant un vrai levier de valeur à leurs clients, grâce à la formation professionnelle 100\\u00a0% financée.</p>\n\n<p>Voici ce que nous mettons en place pour vous :</p>\n\n<p>\\u2013 Une conseillère formation dédiée pour vous accompagner tout au long du partenariat<br>\n\\u2013 Le montage complet des dossiers, sans charge administrative pour vos équipes<br>\n\\u2013 Un service de renouvellement annuel pour proposer chaque année de nouvelles formations à vos clients<br>\n\\u2013 Une solution simple, fluide et entièrement prise en main de notre côté</p>\n\n<p>Je vous joins une brochure pour vous donner une vue d\\u2019ensemble de notre approche :<br>\n<a href=\"https://147594235.fs1.hubspotusercontent-eu1.net/hubfs/147594235/Brochure%20Agence-WEB.pdf\" style=\"color:#1a73e8\">Télécharger la brochure</a></p>\n\n<p>Bien cordialement,</p>\n\n${signaturePlaceholder}\n</div>`;\n\nconst email1_text = `Bonjour ${firstname},\n\nEncore merci pour votre temps et pour la prise de rendez-vous.\n${rdvLineText}\nPour vous présenter brièvement notre approche à L\\u2019Atelier des Experts, nous aidons les agences de communication à générer un chiffre d\\u2019affaires supplémentaire, tout en apportant un vrai levier de valeur à leurs clients, grâce à la formation professionnelle 100% financée.\n\nVoici ce que nous mettons en place pour vous :\n\n\\u2013 Une conseillère formation dédiée pour vous accompagner tout au long du partenariat\n\\u2013 Le montage complet des dossiers, sans charge administrative pour vos équipes\n\\u2013 Un service de renouvellement annuel pour proposer chaque année de nouvelles formations à vos clients\n\\u2013 Une solution simple, fluide et entièrement prise en main de notre côté\n\nBrochure : https://147594235.fs1.hubspotusercontent-eu1.net/hubfs/147594235/Brochure%20Agence-WEB.pdf\n\nBien cordialement,\n%%COMMERCIAL_NAME%%`;\n\n// =============================================\n// Email 2: Post-RDV / Contrat\n// =============================================\nconst email2_subject = \"Suite à notre rendez-vous — L'Atelier des Experts\";\n\nconst email2_html = `<div style=\"font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#222\">\n<p>Bonjour ${firstname},</p>\n\n<p>Merci pour notre échange, c\\u2019était un plaisir de faire votre connaissance et de découvrir plus en détail l\\u2019activité de ${companyName}.</p>\n\n<p>Comme convenu, je vais vous transmettre le contrat de partenariat via Yousign. Dès qu\\u2019il sera signé, je pourrai vous ouvrir votre accès sur la plateforme Stafy afin que vous puissiez commencer à déposer vos premiers dossiers.</p>\n\n<p>En travaillant avec L\\u2019Atelier des Experts, vous bénéficiez d\\u2019un centre de formation externalisé clé en main, conçu pour vous accompagner dans le développement de votre activité :</p>\n\n<p>\\u2013 Une conseillère dédiée pour vous accompagner au quotidien<br>\n\\u2013 Le closing de vos clients et prospects pour maximiser vos opportunités<br>\n\\u2013 Le montage complet des dossiers, avec gestion administrative et logistique<br>\n\\u2013 La prise en charge du financement et la récupération directe des paiements<br>\n\\u2013 Une avance de trésorerie, avec paiement de vos formations à 45 jours après leur fin<br>\n\\u2013 Un service de renouvellement automatique en début d\\u2019année pour sécuriser vos clients récurrents</p>\n\n<p>Je reste bien entendu disponible si vous avez la moindre question concernant le contrat ou la suite du processus.</p>\n\n<p>Au plaisir de concrétiser tout cela très prochainement,</p>\n\n<p>Bien cordialement,</p>\n\n${signaturePlaceholder}\n</div>`;\n\nconst email2_text = `Bonjour ${firstname},\n\nMerci pour notre échange, c\\u2019était un plaisir de faire votre connaissance et de découvrir plus en détail l\\u2019activité de ${companyName}.\n\nComme convenu, je vais vous transmettre le contrat de partenariat via Yousign. Dès qu\\u2019il sera signé, je pourrai vous ouvrir votre accès sur la plateforme Stafy afin que vous puissiez commencer à déposer vos premiers dossiers.\n\nEn travaillant avec L\\u2019Atelier des Experts, vous bénéficiez d\\u2019un centre de formation externalisé clé en main :\n\n\\u2013 Une conseillère dédiée pour vous accompagner au quotidien\n\\u2013 Le closing de vos clients et prospects pour maximiser vos opportunités\n\\u2013 Le montage complet des dossiers, avec gestion administrative et logistique\n\\u2013 La prise en charge du financement et la récupération directe des paiements\n\\u2013 Une avance de trésorerie, avec paiement de vos formations à 45 jours après leur fin\n\\u2013 Un service de renouvellement automatique en début d\\u2019année\n\nJe reste disponible si vous avez la moindre question.\n\nBien cordialement,\n%%COMMERCIAL_NAME%%`;\n\nreturn [{\n  json: {\n    ...item,\n    email1_subject, email1_html, email1_text,\n    email2_subject, email2_html, email2_text,\n    send_confirmation_email: sendConfirmation,\n    send_offer_email: sendOffer\n  }\n}];",
+          "mode": "runOnceForAllItems"
+        },
+        "name": "Préparer emails",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4870,
+          300
+        ],
+        "id": "d1a1a1a1-0050"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": ""
+            },
+            "conditions": [
+              {
+                "id": "cond-email-conf",
+                "leftValue": "={{ $json.send_confirmation_email }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {
+            "looseTypeValidation": true
+          }
+        },
+        "name": "Email confirmation ?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          5090,
+          300
+        ],
+        "id": "d1a1a1a1-0051"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.mailjet.com/v3.1/send",
+          "authentication": "none",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "Basic OTA2NzQwOTViNDc1ZWNhYjM5MjFhNGQ0N2RkMTQ4NzE6OTZmNTBlMTFlOTY5MjViMjg5YzUxNjQ5MmRjZDZjMTQ="
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({Messages:[{From:{Email:\"contact@stafy.fr\",Name:$json.commercial_name},ReplyTo:{Email:$json.commercial_email,Name:$json.commercial_name},To:[{Email:$json.contact_email,Name:$json.contact_firstname}],Subject:$json.email1_subject,HTMLPart:$json.email1_html,TextPart:$json.email1_text,CustomID:\"formaxe-conf-\"+$json.contact_id}]}) }}",
+          "options": {}
+        },
+        "name": "Envoyer email confirmation",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          5310,
+          180
+        ],
+        "id": "d1a1a1a1-0052",
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.hubapi.com/crm/v3/objects/emails",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ (() => { const d = $json; return JSON.stringify({ properties: { hs_email_direction: \"EMAIL\", hs_email_status: \"SENT\", hs_email_subject: d.email1_subject, hs_email_text: (d.email1_text || \"\").substring(0, 65535), hs_timestamp: new Date().toISOString(), hs_email_sender_email: d.commercial_email, hs_email_sender_firstname: (d.commercial_name || \"\").split(\" \")[0], hs_email_sender_lastname: (d.commercial_name || \"\").split(\" \").slice(1).join(\" \"), hs_email_to_email: d.contact_email, hs_email_to_firstname: d.contact_firstname }, associations: [{ to: { id: d.contact_id }, types: [{ associationCategory: \"HUBSPOT_DEFINED\", associationTypeId: 198 }] }] }); })() }}",
+          "options": {}
+        },
+        "name": "Logger email 1 CRM",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          5530,
+          180
+        ],
+        "id": "d1a1a1a1-0053",
+        "credentials": {
+          "hubspotOAuth2Api": {
+            "id": "u2JYQLBBKAkG4wic",
+            "name": "Formaxe"
+          }
+        },
+        "onError": "continueRegularOutput",
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": ""
+            },
+            "conditions": [
+              {
+                "id": "cond-email-offre",
+                "leftValue": "={{ $json.send_offer_email }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {
+            "looseTypeValidation": true
+          }
+        },
+        "name": "Email offre ?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          5750,
+          300
+        ],
+        "id": "d1a1a1a1-0054"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.mailjet.com/v3.1/send",
+          "authentication": "none",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "Basic OTA2NzQwOTViNDc1ZWNhYjM5MjFhNGQ0N2RkMTQ4NzE6OTZmNTBlMTFlOTY5MjViMjg5YzUxNjQ5MmRjZDZjMTQ="
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({Messages:[{From:{Email:\"contact@stafy.fr\",Name:$json.commercial_name},ReplyTo:{Email:$json.commercial_email,Name:$json.commercial_name},To:[{Email:$json.contact_email,Name:$json.contact_firstname}],Subject:$json.email2_subject,HTMLPart:$json.email2_html,TextPart:$json.email2_text,CustomID:\"formaxe-offre-\"+$json.contact_id}]}) }}",
+          "options": {}
+        },
+        "name": "Envoyer email offre",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          5970,
+          180
+        ],
+        "id": "d1a1a1a1-0055",
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.hubapi.com/crm/v3/objects/emails",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotOAuth2Api",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ (() => { const d = $json; return JSON.stringify({ properties: { hs_email_direction: \"EMAIL\", hs_email_status: \"SENT\", hs_email_subject: d.email2_subject, hs_email_text: (d.email2_text || \"\").substring(0, 65535), hs_timestamp: new Date().toISOString(), hs_email_sender_email: d.commercial_email, hs_email_sender_firstname: (d.commercial_name || \"\").split(\" \")[0], hs_email_sender_lastname: (d.commercial_name || \"\").split(\" \").slice(1).join(\" \"), hs_email_to_email: d.contact_email, hs_email_to_firstname: d.contact_firstname }, associations: [{ to: { id: d.contact_id }, types: [{ associationCategory: \"HUBSPOT_DEFINED\", associationTypeId: 198 }] }] }); })() }}",
+          "options": {}
+        },
+        "name": "Logger email 2 CRM",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          6190,
+          180
+        ],
+        "id": "d1a1a1a1-0056",
+        "credentials": {
+          "hubspotOAuth2Api": {
+            "id": "u2JYQLBBKAkG4wic",
+            "name": "Formaxe"
+          }
+        },
+        "onError": "continueRegularOutput",
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "parameters": {
+          "method": "GET",
+          "url": "={{ 'https://api.hubapi.com/crm/v3/owners/' + $('Résoudre owner ID').first().json.owner_id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotOAuth2Api",
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true
+              }
+            }
+          }
+        },
+        "id": "sig-0001-0001-4000-8000-000000000001",
+        "name": "Récupérer owner HubSpot",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          5610,
+          300
+        ],
+        "credentials": {
+          "hubspotOAuth2Api": {
+            "id": "u2JYQLBBKAkG4wic",
+            "name": "Formaxe"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "// Annuaire complémentaire des commerciaux\n// Pour ajouter un nouveau commercial : ajouter une entrée avec son owner_id HubSpot\nconst ANNUAIRE = {\n  '80222699': {  // Louis PREZEAU\n    title: 'Commercial Partenaires',\n    company: \"Atelier des Experts\\u00a9\",\n    phone: '01 84 75 47 20',\n    bookingUrl: 'https://meetings.hubspot.com/louis-prezeau'\n  },\n  '51816547': {  // Baptiste Cordier\n    title: 'Commercial',\n    company: \"Atelier des Experts\\u00a9\",\n    phone: '01 23 45 67 89',\n    bookingUrl: 'https://meetings.hubspot.com/baptiste-cordier'\n  },\n  '31958923': {  // Liam Gaillard\n    title: 'Commercial',\n    company: \"Atelier des Experts\\u00a9\",\n    phone: '01 84 75 47 20',\n    bookingUrl: 'https://meetings.hubspot.com/liam-gaillard'\n  },\n  '52585251': {  // Héla\n    title: 'Chargée de développement',\n    company: \"Atelier des Experts\\u00a9\",\n    phone: '01 84 75 47 20',\n    bookingUrl: 'https://meetings.hubspot.com/hela-formaxe'\n  },\n  '80309654': {  // Carine\n    title: 'Chargée de développement',\n    company: \"Atelier des Experts\\u00a9\",\n    phone: '01 84 75 47 20',\n    bookingUrl: 'https://meetings.hubspot.com/carine-formaxe'\n  }\n};\n\nconst DEFAULT_INFO = {\n  title: 'Commercial',\n  company: \"Atelier des Experts\\u00a9\",\n  phone: '01 84 75 47 20',\n  bookingUrl: 'https://meetings.hubspot.com/atelier-des-experts'\n};\n\n// Données du flow\nconst prevData = $('Préparer emails').first().json;\nconst ownerResponse = $('Récupérer owner HubSpot').first().json;\nconst ownerBody = ownerResponse.body || ownerResponse;\n\nconst ownerId = $('Résoudre owner ID').first().json.owner_id || '';\nconst ownerFirstName = ownerBody.firstName || '';\nconst ownerLastName = ownerBody.lastName || '';\nconst ownerEmail = ownerBody.email || '';\nconst ownerName = `${ownerFirstName} ${ownerLastName}`.trim();\n\n// Fusionner HubSpot owner + annuaire complémentaire\nconst extra = ANNUAIRE[ownerId] || DEFAULT_INFO;\n\nconst sig = {\n  name: ownerName || \"L'Atelier des Experts\",\n  title: extra.title,\n  company: extra.company,\n  phone: extra.phone,\n  email: ownerEmail || 'contact@atelierdesexperts.fr',\n  website: 'atelierdesexperts.fr',\n  bookingUrl: extra.bookingUrl\n};\n\n// Générer le HTML de signature (style Gmail)\nconst signatureHtml = `<div style=\"margin-top:24px;padding-top:16px;border-top:1px solid #dadce0;font-family:Arial,sans-serif;font-size:13px;color:#555;line-height:1.5\">\n<b>${sig.name}</b><br>\n${sig.title} | ${sig.company}<br>\n${sig.phone}<br>\n<a href=\"mailto:${sig.email}\" style=\"color:#1a73e8;text-decoration:none\">${sig.email}</a><br>\n<a href=\"https://${sig.website}\" style=\"color:#1a73e8;text-decoration:none\">${sig.website}</a>\n</div>`;\n\n// Remplacer les placeholders %%...%% dans les emails\nfunction replacePlaceholders(text) {\n  return text\n    .replace(/%%COMMERCIAL_NAME%%/g, sig.name)\n    .replace(/%%COMMERCIAL_TITLE%%/g, sig.title)\n    .replace(/%%COMMERCIAL_COMPANY%%/g, sig.company)\n    .replace(/%%COMMERCIAL_PHONE%%/g, sig.phone)\n    .replace(/%%COMMERCIAL_EMAIL%%/g, sig.email)\n    .replace(/%%COMMERCIAL_WEBSITE%%/g, sig.website);\n}\n\nconst email1_html = replacePlaceholders(prevData.email1_html || '');\nconst email1_text = replacePlaceholders(prevData.email1_text || '');\nconst email2_html = replacePlaceholders(prevData.email2_html || '');\nconst email2_text = replacePlaceholders(prevData.email2_text || '');\n\nreturn [{\n  json: {\n    ...prevData,\n    commercial_name: sig.name,\n    commercial_email: sig.email,\n    commercial_title: sig.title,\n    commercial_phone: sig.phone,\n    commercial_website: sig.website,\n    booking_url: sig.bookingUrl,\n    signature_html: signatureHtml,\n    email1_html,\n    email1_text,\n    email2_html,\n    email2_text\n  }\n}];"
+        },
+        "id": "sig-0002-0002-4000-8000-000000000002",
+        "name": "Générer signature",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          5830,
+          300
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook Decidento": {
+        "main": [
+          [
+            {
+              "node": "Préparer les données",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Préparer les données": {
+        "main": [
+          [
+            {
+              "node": "Chercher owners HubSpot",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Chercher owners HubSpot": {
+        "main": [
+          [
+            {
+              "node": "Résoudre owner ID",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Résoudre owner ID": {
+        "main": [
+          [
+            {
+              "node": "Chercher entreprise par SIREN",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Chercher entreprise par SIREN": {
+        "main": [
+          [
+            {
+              "node": "Entreprise existe ?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Entreprise existe ?": {
+        "main": [
+          [
+            {
+              "node": "ID entreprise existante",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Créer entreprise",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ID entreprise existante": {
+        "main": [
+          [
+            {
+              "node": "Fusionner company_id",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Créer entreprise": {
+        "main": [
+          [
+            {
+              "node": "ID nouvelle entreprise",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ID nouvelle entreprise": {
+        "main": [
+          [
+            {
+              "node": "Fusionner company_id",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fusionner company_id": {
+        "main": [
+          [
+            {
+              "node": "Chercher contact existant",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Chercher contact existant": {
+        "main": [
+          [
+            {
+              "node": "Contact existe ?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Contact existe ?": {
+        "main": [
+          [
+            {
+              "node": "Mettre à jour contact",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Créer contact HubSpot",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Mettre à jour contact": {
+        "main": [
+          [
+            {
+              "node": "Fusionner contact_id",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Créer contact HubSpot": {
+        "main": [
+          [
+            {
+              "node": "Fusionner contact_id",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fusionner contact_id": {
+        "main": [
+          [
+            {
+              "node": "Associer contact ↔ entreprise",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Associer contact ↔ entreprise": {
+        "main": [
+          [
+            {
+              "node": "Créer Deal Prospection",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Créer Deal Prospection": {
+        "main": [
+          [
+            {
+              "node": "Notes présentes ?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Notes présentes ?": {
+        "main": [
+          [
+            {
+              "node": "Créer note HubSpot",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Tâche rappel ?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Créer note HubSpot": {
+        "main": [
+          [
+            {
+              "node": "Tâche rappel ?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tâche rappel ?": {
+        "main": [
+          [
+            {
+              "node": "Créer tâche rappel J+3",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "RDV tâche ?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Créer tâche rappel J+3": {
+        "main": [
+          [
+            {
+              "node": "RDV tâche ?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RDV tâche ?": {
+        "main": [
+          [
+            {
+              "node": "Créer tâche RDV",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Préparer emails",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Créer tâche RDV": {
+        "main": [
+          [
+            {
+              "node": "Préparer emails",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Préparer emails": {
+        "main": [
+          [
+            {
+              "node": "Récupérer owner HubSpot",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Email confirmation ?": {
+        "main": [
+          [
+            {
+              "node": "Envoyer email confirmation",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Email offre ?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Envoyer email confirmation": {
+        "main": [
+          [
+            {
+              "node": "Logger email 1 CRM",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Logger email 1 CRM": {
+        "main": [
+          [
+            {
+              "node": "Email offre ?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Email offre ?": {
+        "main": [
+          [
+            {
+              "node": "Envoyer email offre",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Répondre succès",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Envoyer email offre": {
+        "main": [
+          [
+            {
+              "node": "Logger email 2 CRM",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Logger email 2 CRM": {
+        "main": [
+          [
+            {
+              "node": "Répondre succès",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Récupérer owner HubSpot": {
+        "main": [
+          [
+            {
+              "node": "Générer signature",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Générer signature": {
+        "main": [
+          [
+            {
+              "node": "Email confirmation ?",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Email offre ?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Baptiste  C",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-03-05T15:30:16.690Z",
+        "id": 280,
+        "workflowId": "slEyspRFX77Y31R4",
+        "versionId": "beea8323-e3f3-46e9-af72-c8d75d67e73c",
+        "event": "activated",
+        "userId": "e6335865-545b-46a2-baad-da60cc327852"
+      },
+      {
+        "createdAt": "2026-03-05T15:30:16.553Z",
+        "id": 279,
+        "workflowId": "slEyspRFX77Y31R4",
+        "versionId": "beea8323-e3f3-46e9-af72-c8d75d67e73c",
+        "event": "deactivated",
+        "userId": "e6335865-545b-46a2-baad-da60cc327852"
+      }
+    ]
   }
 }
