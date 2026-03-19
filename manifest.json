@@ -41,7 +41,7 @@
   "options_page": "options/options.html",
   "web_accessible_resources": [
     {
-      "resources": ["images/logo.png"],
+      "resources": ["images/logo.png", "images/logo-stafy.png"],
       "matches": ["https://platform.decidento.com/*"]
     }
   ]

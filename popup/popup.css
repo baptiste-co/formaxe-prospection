@@ -31,6 +31,17 @@ body {
   filter: brightness(10);
 }
 
+.popup-logo-separator {
+  font-size: 14px;
+  color: rgba(255,255,255,0.4);
+  font-weight: 300;
+}
+
+.popup-logo-stafy {
+  height: 20px;
+  width: auto;
+}
+
 .popup-title {
   font-size: 15px;
   font-weight: 700;

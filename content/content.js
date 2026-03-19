@@ -190,9 +190,12 @@
     bloc.insertBefore(badge, bloc.firstChild);
   }
 
-  // ── Utility: get logo URL ──
+  // ── Utility: get logo URLs ──
   function getLogoURL() {
     return chrome.runtime.getURL('images/logo.png');
+  }
+  function getStafyLogoURL() {
+    return chrome.runtime.getURL('images/logo-stafy.png');
   }
 
   // ── Helper: extract a value from the Identité section by label ──
@@ -386,6 +389,8 @@
     form.innerHTML = `
       <div class="formaxe-form-header">
         <img src="${getLogoURL()}" alt="Formaxe" class="formaxe-form-logo">
+        <span class="formaxe-form-logo-sep">×</span>
+        <img src="${getStafyLogoURL()}" alt="Stafy" class="formaxe-form-logo-stafy">
         <span class="formaxe-form-title">Formaxe - Acquisition</span>
       </div>
       <div class="formaxe-form-editable-section">
