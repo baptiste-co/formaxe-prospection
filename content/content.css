@@ -416,8 +416,10 @@
 }
 
 /* ── Brochure dropdown (appears when presentation offre is selected) ── */
-.formaxe-brochure-select-wrapper .formaxe-form-label {
-  margin-bottom: 3px;
+.formaxe-brochure-select-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .formaxe-brochure-select-wrapper .formaxe-form-select {
