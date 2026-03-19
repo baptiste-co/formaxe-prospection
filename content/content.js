@@ -534,35 +534,11 @@
         <textarea class="formaxe-form-textarea formaxe-input-notes" rows="3" placeholder="Notes de l'appel (optionnel)..."></textarea>
       </div>
       <div class="formaxe-feedback"></div>
-      <div class="formaxe-webhook-config">
-        <label class="formaxe-form-label">Webhook URL</label>
-        <div class="formaxe-webhook-row">
-          <input type="url" class="formaxe-webhook-input" placeholder="https://votre-webhook.com/endpoint">
-          <button class="formaxe-webhook-save-btn" title="Sauvegarder l'URL">OK</button>
-        </div>
-      </div>
       <div class="formaxe-form-footer">
         <span class="formaxe-form-version">v${VERSION}</span>
         <span class="formaxe-form-dev">Developed by Gripow</span>
       </div>
     `;
-
-    // ── Webhook config ──
-    const webhookInput = form.querySelector('.formaxe-webhook-input');
-    const webhookSaveBtn = form.querySelector('.formaxe-webhook-save-btn');
-
-    chrome.storage.local.get(['webhookUrl'], (result) => {
-      webhookInput.value = result.webhookUrl || WEBHOOK_DEFAULT;
-    });
-
-    webhookSaveBtn.addEventListener('click', () => {
-      const url = webhookInput.value.trim();
-      if (url) {
-        chrome.storage.local.set({ webhookUrl: url });
-        webhookSaveBtn.textContent = '\u2713';
-        setTimeout(() => { webhookSaveBtn.textContent = 'OK'; }, 1500);
-      }
-    });
 
     // References to fields
     const firstnameInput = form.querySelector('.formaxe-input-firstname');
