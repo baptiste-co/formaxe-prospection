@@ -258,19 +258,33 @@
       company.address = mapLink.textContent?.trim() || '';
     }
 
-    // Phone - look for tel: link within the company header area
-    const companySection = document.querySelector('.contact-societe, .d-md-flex.align-items-center.contact-societe');
-    if (companySection) {
-      const telLink = companySection.querySelector('a[href^="tel:"]');
-      if (telLink) {
-        company.phone = telLink.textContent?.trim() || telLink.getAttribute('href')?.replace('tel:', '') || '';
+    // Phone - Priority 1: yellow phone button with tcxhref (most reliable on Decidento)
+    const phoneBtnLink = document.querySelector('.phone-btn .js-tel a[tcxhref]');
+    if (phoneBtnLink) {
+      company.phone = phoneBtnLink.getAttribute('tcxhref') || phoneBtnLink.textContent?.trim() || '';
+    }
+    // Priority 2: yellow phone button without tcxhref
+    if (!company.phone) {
+      const phoneBtnAny = document.querySelector('.phone-btn .js-tel a');
+      if (phoneBtnAny) {
+        company.phone = phoneBtnAny.textContent?.trim() || '';
       }
     }
-    // Fallback: search in phone button areas
+    // Priority 3: tel: link in company header
     if (!company.phone) {
-      const phoneSpans = document.querySelectorAll('.js-tel a[href^="tel:"]');
+      const companySection = document.querySelector('.contact-societe, .d-md-flex.align-items-center.contact-societe');
+      if (companySection) {
+        const telLink = companySection.querySelector('a[href^="tel:"]');
+        if (telLink) {
+          company.phone = telLink.textContent?.trim() || telLink.getAttribute('href')?.replace('tel:', '') || '';
+        }
+      }
+    }
+    // Priority 4: any js-tel link on the page
+    if (!company.phone) {
+      const phoneSpans = document.querySelectorAll('.js-tel a');
       if (phoneSpans.length > 0) {
-        company.phone = phoneSpans[0].textContent?.trim() || phoneSpans[0].getAttribute('href')?.replace('tel:', '') || '';
+        company.phone = phoneSpans[0].getAttribute('tcxhref') || phoneSpans[0].textContent?.trim() || '';
       }
     }
 
@@ -583,7 +597,9 @@
     checkConfirmation.addEventListener('change', () => {
       rdvBrochureWrapper.style.display = checkConfirmation.checked ? 'block' : 'none';
       if (!checkConfirmation.checked) rdvBrochureSelect.value = '';
+      checkSelections();
     });
+    rdvBrochureSelect.addEventListener('change', checkSelections);
 
     // Email section: show/hide options when checkbox is toggled
     checkSendEmail.addEventListener('change', () => {
@@ -595,13 +611,16 @@
       } else {
         brochureSelectWrapper.style.display = emailTemplateSelect.value === 'presentation_offre' ? 'block' : 'none';
       }
+      checkSelections();
     });
 
     // Show/hide brochure depending on email template
     emailTemplateSelect.addEventListener('change', () => {
       brochureSelectWrapper.style.display = emailTemplateSelect.value === 'presentation_offre' ? 'block' : 'none';
       if (emailTemplateSelect.value !== 'presentation_offre') brochureSelect.value = '';
+      checkSelections();
     });
+    brochureSelect.addEventListener('change', checkSelections);
 
     // Show/hide rappel custom date
     rappelDelaiSelect.addEventListener('change', () => {
@@ -616,7 +635,20 @@
     const feedbackDiv = form.querySelector('.formaxe-feedback');
 
     function checkSelections() {
-      sendBtn.disabled = !(statusSelect.value && commercialSelect.value);
+      let canSend = statusSelect.value && commercialSelect.value;
+
+      // Validate brochure if email with presentation is checked
+      if (canSend) {
+        const isRdv = statusSelect.value === 'Rendez-vous pris';
+        if (isRdv && checkConfirmation.checked && !rdvBrochureSelect.value) {
+          canSend = false;
+        }
+        if (!isRdv && checkSendEmail.checked && emailTemplateSelect.value === 'presentation_offre' && !brochureSelect.value) {
+          canSend = false;
+        }
+      }
+
+      sendBtn.disabled = !canSend;
     }
 
     // Reset helper
