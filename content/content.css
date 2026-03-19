@@ -334,6 +334,23 @@
   cursor: pointer;
 }
 
+/* ── Editable contact fields section ── */
+.formaxe-form-editable-section {
+  margin-bottom: 10px;
+}
+
+.formaxe-form-editable-section .formaxe-form-input {
+  font-size: 12px;
+  padding: 5px 8px;
+  background: #fff;
+  border: 1px dashed #ccc;
+}
+
+.formaxe-form-editable-section .formaxe-form-input:focus {
+  border-style: solid;
+  border-color: #54B6B4;
+}
+
 /* ── RDV section (conditional) ── */
 .formaxe-rdv-section {
   background: rgba(84, 182, 180, 0.06);
@@ -343,8 +360,61 @@
   margin-top: 10px;
 }
 
-.formaxe-offer-section {
+/* ── Rappel section (conditional) ── */
+.formaxe-rappel-section {
+  background: rgba(255, 165, 0, 0.06);
+  border: 1px solid rgba(255, 165, 0, 0.25);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 10px;
+}
+
+/* ── RDV brochure (appears when confirmation checkbox is checked) ── */
+.formaxe-rdv-brochure-wrapper {
   margin-top: 8px;
+  margin-left: 21px;
+  width: calc(100% - 21px);
+  animation: formaxeOptionsFadeIn 0.2s ease-out;
+}
+
+.formaxe-rdv-brochure-wrapper .formaxe-form-select {
+  width: 100%;
+  max-width: 320px;
+}
+
+/* ── Email section (for non-RDV statuses) ── */
+.formaxe-email-section {
+  margin-top: 8px;
+}
+
+.formaxe-email-options-wrapper {
+  margin-top: 8px;
+  margin-left: 21px;
+  width: calc(100% - 21px);
+  animation: formaxeOptionsFadeIn 0.2s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formaxe-email-options-wrapper .formaxe-form-select {
+  width: 100%;
+  max-width: 320px;
+}
+
+/* ── Brochure dropdown (appears when presentation offre is selected) ── */
+.formaxe-brochure-select-wrapper .formaxe-form-label {
+  margin-bottom: 3px;
+}
+
+.formaxe-brochure-select-wrapper .formaxe-form-select {
+  width: 100%;
+  max-width: 320px;
+}
+
+@keyframes formaxeOptionsFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Success / Error feedback */

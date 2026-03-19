@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Formaxe - Acquisition",
-  "version": "1.0.0",
+  "version": "1.6.0",
   "description": "Extension d'acquisition de contacts depuis Decidento. Developed by Gripow.",
   "author": "Gripow",
   "permissions": [

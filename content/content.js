@@ -9,19 +9,40 @@
 (function () {
   'use strict';
 
-  const VERSION = '1.3.0';
+  const VERSION = '1.6.0';
   const WEBHOOK_DEFAULT = 'https://getgarsen.app.n8n.cloud/webhook/decidento';
 
   const STATUS_OPTIONS = [
     'Message vocal laissé',
-    'Email envoyé',
     'Injoignable',
     'Rendez-vous pris',
     'Ne plus rappeler',
     'Déjà appelé',
     'Pas intéressé',
     'Déjà en partenariat',
-    'A raccroché'
+    'A raccroché',
+    'Pas de besoin immédiat - rappel'
+  ];
+
+  const RAPPEL_DELAI_OPTIONS = [
+    { label: '1 mois', value: 1 },
+    { label: '2 mois', value: 2 },
+    { label: '3 mois', value: 3 },
+    { label: '4 mois', value: 4 },
+    { label: '5 mois', value: 5 },
+    { label: '6 mois', value: 6 },
+    { label: '7 mois', value: 7 },
+    { label: '8 mois', value: 8 },
+    { label: '9 mois', value: 9 },
+    { label: '10 mois', value: 10 },
+    { label: '11 mois', value: 11 },
+    { label: '12 mois', value: 12 },
+    { label: 'Date personnalisée', value: 'custom' }
+  ];
+
+  const EMAIL_TEMPLATE_OPTIONS = [
+    { label: 'Mail de présentation de l\'offre', value: 'presentation_offre' },
+    { label: 'Mail appel sans réponse', value: 'appel_sans_reponse' }
   ];
 
   // Liste de commerciaux par défaut (fallback si le webhook owners échoue)
@@ -278,9 +299,18 @@
     // Name - from the bold name paragraph
     const nameParagraph = contactBloc.querySelector('.contact-details p.font-weight-bold');
     if (nameParagraph) {
-      // Get only the text node content, not nested buttons
       const nameText = nameParagraph.childNodes[0]?.textContent?.trim();
       data.name = nameText || '';
+    }
+
+    // Split name into firstname / lastname
+    if (data.name) {
+      const parts = data.name.split(' ');
+      data.firstname = parts[0] || '';
+      data.lastname = parts.slice(1).join(' ') || '';
+    } else {
+      data.firstname = '';
+      data.lastname = '';
     }
 
     // Position/Role - second paragraph in contact-details
@@ -302,15 +332,26 @@
       data.title_tag = tagSpan.textContent?.trim() || '';
     }
 
+    // Phone - from the yellow phone button within or near the contact bloc
+    const phoneBtn = contactBloc.querySelector('.phone-btn .js-tel a');
+    if (phoneBtn) {
+      data.phone = phoneBtn.getAttribute('tcxhref') || phoneBtn.textContent?.trim() || '';
+    }
+    // Fallback: look for any tel link in the contact bloc
+    if (!data.phone) {
+      const telLink = contactBloc.querySelector('a[href^="tel:"]');
+      if (telLink) {
+        data.phone = telLink.textContent?.trim() || telLink.getAttribute('href')?.replace('tel:', '') || '';
+      }
+    }
+
     // Email
     const contactInfoSection = contactBloc.querySelector('.contact-info');
     if (contactInfoSection) {
-      // Look for email link
       const emailLink = contactInfoSection.querySelector('a[href^="mailto:"]');
       if (emailLink && !emailLink.classList.contains('disabled-link')) {
         data.email = emailLink.getAttribute('href')?.replace('mailto:', '') || '';
       } else {
-        // Check for detected email text
         const emailText = contactInfoSection.querySelector('.contact-mail');
         if (emailText) {
           const emailVal = emailText.textContent?.trim();
@@ -337,9 +378,9 @@
     const form = document.createElement('div');
     form.className = 'formaxe-form-container';
 
-    // Pré-remplir le téléphone : celui du contact s'il existe, sinon celui de l'entreprise (standard)
-    const defaultPhone = companyData.phone || '';
-    // Pré-remplir l'email : celui détecté sur la fiche contact Decidento (pas l'email entreprise)
+    // Pré-remplir le téléphone : celui du contact (bouton phone) sinon entreprise
+    const defaultPhone = contactData.phone || companyData.phone || '';
+    const phoneHint = contactData.phone ? 'Numéro du contact (Decidento)' : 'Standard de l\'entreprise';
     const defaultEmail = contactData.email || '';
 
     form.innerHTML = `
@@ -347,16 +388,32 @@
         <img src="${getLogoURL()}" alt="Formaxe" class="formaxe-form-logo">
         <span class="formaxe-form-title">Formaxe - Acquisition</span>
       </div>
-      <div class="formaxe-form-contact-summary">
-        <strong>${contactData.name || 'N/A'}</strong> — ${contactData.position || 'N/A'}
-        ${companyData.name ? ' | ' + companyData.name : ''}
-        ${companyData.siren ? ' <span class="formaxe-siren-badge">SIREN ' + companyData.siren + '</span>' : ''}
+      <div class="formaxe-form-editable-section">
+        <div class="formaxe-form-row formaxe-form-row-fields">
+          <div class="formaxe-form-group">
+            <label class="formaxe-form-label">Prénom</label>
+            <input type="text" class="formaxe-form-input formaxe-input-firstname" value="${contactData.firstname || ''}" placeholder="Prénom">
+          </div>
+          <div class="formaxe-form-group">
+            <label class="formaxe-form-label">Nom</label>
+            <input type="text" class="formaxe-form-input formaxe-input-lastname" value="${contactData.lastname || ''}" placeholder="Nom">
+          </div>
+          <div class="formaxe-form-group">
+            <label class="formaxe-form-label">Poste</label>
+            <input type="text" class="formaxe-form-input formaxe-input-position" value="${contactData.position || ''}" placeholder="Fonction">
+          </div>
+        </div>
+        <div class="formaxe-form-contact-summary">
+          ${companyData.name ? '<strong>' + companyData.name + '</strong>' : ''}
+          ${contactData.title_tag ? ' — ' + contactData.title_tag : ''}
+          ${companyData.siren ? ' <span class="formaxe-siren-badge">SIREN ' + companyData.siren + '</span>' : ''}
+        </div>
       </div>
       <div class="formaxe-form-row formaxe-form-row-fields">
         <div class="formaxe-form-group">
           <label class="formaxe-form-label">Téléphone</label>
           <input type="tel" class="formaxe-form-input formaxe-input-phone" value="${defaultPhone}" placeholder="Numéro de téléphone">
-          <span class="formaxe-form-hint">Par défaut : standard de l'entreprise</span>
+          <span class="formaxe-form-hint">${phoneHint}</span>
         </div>
         <div class="formaxe-form-group">
           <label class="formaxe-form-label">Email</label>
@@ -384,6 +441,21 @@
           Envoyer
         </button>
       </div>
+      <div class="formaxe-rappel-section" style="display:none;">
+        <div class="formaxe-form-row formaxe-form-row-fields">
+          <div class="formaxe-form-group">
+            <label class="formaxe-form-label">Rappeler dans</label>
+            <select class="formaxe-form-select formaxe-select-rappel-delai">
+              <option value="">-- Délai de rappel --</option>
+              ${RAPPEL_DELAI_OPTIONS.map(d => `<option value="${d.value}">${d.label}</option>`).join('')}
+            </select>
+          </div>
+          <div class="formaxe-form-group formaxe-rappel-custom-date" style="display:none;">
+            <label class="formaxe-form-label">Date de rappel</label>
+            <input type="date" class="formaxe-form-input formaxe-input-rappel-date">
+          </div>
+        </div>
+      </div>
       <div class="formaxe-rdv-section" style="display:none;">
         <div class="formaxe-form-row formaxe-form-row-fields">
           <div class="formaxe-form-group">
@@ -394,15 +466,49 @@
         <div class="formaxe-form-row formaxe-form-row-checkboxes">
           <label class="formaxe-checkbox-label">
             <input type="checkbox" class="formaxe-checkbox formaxe-check-confirmation">
-            <span>Envoyer mail de confirmation de RDV</span>
+            <span>Envoyer mail de confirmation de RDV + présentation</span>
           </label>
         </div>
+        <div class="formaxe-rdv-brochure-wrapper" style="display:none;">
+          <div class="formaxe-form-group">
+            <label class="formaxe-form-label">Pièce jointe</label>
+            <select class="formaxe-form-select formaxe-select-rdv-brochure">
+              <option value="">-- Choisir une brochure --</option>
+              <option value="brochure_generique">Brochure générique</option>
+              <option value="brochure_agence_web">Brochure agence web</option>
+              <option value="brochure_expert_comptable">Brochure expert comptable</option>
+              <option value="brochure_esn">Brochure ESN</option>
+            </select>
+          </div>
+        </div>
       </div>
-      <div class="formaxe-form-row formaxe-form-row-checkboxes formaxe-offer-section">
-        <label class="formaxe-checkbox-label">
-          <input type="checkbox" class="formaxe-checkbox formaxe-check-offer">
-          <span>Envoyer mail de présentation de l'offre</span>
-        </label>
+      <div class="formaxe-email-section" style="display:none;">
+        <div class="formaxe-form-row formaxe-form-row-checkboxes">
+          <label class="formaxe-checkbox-label">
+            <input type="checkbox" class="formaxe-checkbox formaxe-check-send-email">
+            <span>Envoyer un email</span>
+          </label>
+        </div>
+        <div class="formaxe-email-options-wrapper" style="display:none;">
+          <div class="formaxe-form-row formaxe-form-row-fields">
+            <div class="formaxe-form-group">
+              <label class="formaxe-form-label">Type d'email</label>
+              <select class="formaxe-form-select formaxe-select-email-template">
+                ${EMAIL_TEMPLATE_OPTIONS.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}
+              </select>
+            </div>
+            <div class="formaxe-form-group formaxe-brochure-select-wrapper" style="display:none;">
+              <label class="formaxe-form-label">Pièce jointe</label>
+              <select class="formaxe-form-select formaxe-select-brochure">
+                <option value="">-- Choisir une brochure --</option>
+                <option value="brochure_generique">Brochure générique</option>
+                <option value="brochure_agence_web">Brochure agence web</option>
+                <option value="brochure_expert_comptable">Brochure expert comptable</option>
+                <option value="brochure_esn">Brochure ESN</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="formaxe-form-group formaxe-form-group-notes">
         <label class="formaxe-form-label">Notes</label>
@@ -426,7 +532,6 @@
     const webhookInput = form.querySelector('.formaxe-webhook-input');
     const webhookSaveBtn = form.querySelector('.formaxe-webhook-save-btn');
 
-    // Load saved webhook URL
     chrome.storage.local.get(['webhookUrl'], (result) => {
       webhookInput.value = result.webhookUrl || WEBHOOK_DEFAULT;
     });
@@ -440,14 +545,64 @@
       }
     });
 
-    // References to new fields
+    // References to fields
+    const firstnameInput = form.querySelector('.formaxe-input-firstname');
+    const lastnameInput = form.querySelector('.formaxe-input-lastname');
+    const positionInput = form.querySelector('.formaxe-input-position');
     const phoneInput = form.querySelector('.formaxe-input-phone');
     const emailInput = form.querySelector('.formaxe-input-email');
     const notesInput = form.querySelector('.formaxe-input-notes');
+
+    // RDV section
     const rdvSection = form.querySelector('.formaxe-rdv-section');
     const rdvDateInput = form.querySelector('.formaxe-input-rdv-date');
     const checkConfirmation = form.querySelector('.formaxe-check-confirmation');
-    const checkOffer = form.querySelector('.formaxe-check-offer');
+    const rdvBrochureWrapper = form.querySelector('.formaxe-rdv-brochure-wrapper');
+    const rdvBrochureSelect = form.querySelector('.formaxe-select-rdv-brochure');
+
+    // Rappel section
+    const rappelSection = form.querySelector('.formaxe-rappel-section');
+    const rappelDelaiSelect = form.querySelector('.formaxe-select-rappel-delai');
+    const rappelCustomDateGroup = form.querySelector('.formaxe-rappel-custom-date');
+    const rappelDateInput = form.querySelector('.formaxe-input-rappel-date');
+
+    // Email section (for non-RDV statuses)
+    const emailSection = form.querySelector('.formaxe-email-section');
+    const checkSendEmail = form.querySelector('.formaxe-check-send-email');
+    const emailOptionsWrapper = form.querySelector('.formaxe-email-options-wrapper');
+    const emailTemplateSelect = form.querySelector('.formaxe-select-email-template');
+    const brochureSelectWrapper = form.querySelector('.formaxe-brochure-select-wrapper');
+    const brochureSelect = form.querySelector('.formaxe-select-brochure');
+
+    // RDV: show/hide brochure when confirmation checkbox is toggled
+    checkConfirmation.addEventListener('change', () => {
+      rdvBrochureWrapper.style.display = checkConfirmation.checked ? 'block' : 'none';
+      if (!checkConfirmation.checked) rdvBrochureSelect.value = '';
+    });
+
+    // Email section: show/hide options when checkbox is toggled
+    checkSendEmail.addEventListener('change', () => {
+      emailOptionsWrapper.style.display = checkSendEmail.checked ? 'block' : 'none';
+      if (!checkSendEmail.checked) {
+        emailTemplateSelect.value = 'presentation_offre';
+        brochureSelectWrapper.style.display = 'none';
+        brochureSelect.value = '';
+      } else {
+        brochureSelectWrapper.style.display = emailTemplateSelect.value === 'presentation_offre' ? 'block' : 'none';
+      }
+    });
+
+    // Show/hide brochure depending on email template
+    emailTemplateSelect.addEventListener('change', () => {
+      brochureSelectWrapper.style.display = emailTemplateSelect.value === 'presentation_offre' ? 'block' : 'none';
+      if (emailTemplateSelect.value !== 'presentation_offre') brochureSelect.value = '';
+    });
+
+    // Show/hide rappel custom date
+    rappelDelaiSelect.addEventListener('change', () => {
+      rappelCustomDateGroup.style.display = rappelDelaiSelect.value === 'custom' ? 'block' : 'none';
+      if (rappelDelaiSelect.value !== 'custom') rappelDateInput.value = '';
+    });
 
     // Enable send button only when both dropdowns are selected
     const statusSelect = form.querySelector('.formaxe-select-status');
@@ -459,15 +614,44 @@
       sendBtn.disabled = !(statusSelect.value && commercialSelect.value);
     }
 
-    // Show/hide RDV section based on status selection
+    // Reset helper
+    function resetEmailSections() {
+      // Reset RDV email
+      checkConfirmation.checked = false;
+      rdvBrochureWrapper.style.display = 'none';
+      rdvBrochureSelect.value = '';
+      // Reset standalone email
+      checkSendEmail.checked = false;
+      emailOptionsWrapper.style.display = 'none';
+      emailTemplateSelect.value = 'presentation_offre';
+      brochureSelectWrapper.style.display = 'none';
+      brochureSelect.value = '';
+    }
+
+    // Show/hide sections based on status selection
     statusSelect.addEventListener('change', () => {
       checkSelections();
+      resetEmailSections();
+
+      // RDV section (includes its own email confirmation + brochure)
       if (statusSelect.value === 'Rendez-vous pris') {
         rdvSection.style.display = 'block';
+        emailSection.style.display = 'none';
       } else {
         rdvSection.style.display = 'none';
         rdvDateInput.value = '';
-        checkConfirmation.checked = false;
+        // Show standalone email section for all other statuses
+        emailSection.style.display = 'block';
+      }
+
+      // Rappel section
+      if (statusSelect.value === 'Pas de besoin immédiat - rappel') {
+        rappelSection.style.display = 'block';
+      } else {
+        rappelSection.style.display = 'none';
+        rappelDelaiSelect.value = '';
+        rappelDateInput.value = '';
+        rappelCustomDateGroup.style.display = 'none';
       }
     });
     commercialSelect.addEventListener('change', checkSelections);
@@ -480,6 +664,16 @@
       }
     });
 
+    // ── Helper: compute rappel date from delay in months ──
+    function computeRappelDate() {
+      const delai = rappelDelaiSelect.value;
+      if (!delai) return '';
+      if (delai === 'custom') return rappelDateInput.value || '';
+      const date = new Date();
+      date.setMonth(date.getMonth() + parseInt(delai, 10));
+      return date.toISOString().split('T')[0]; // YYYY-MM-DD
+    }
+
     // Send button click
     sendBtn.addEventListener('click', async () => {
       sendBtn.disabled = true;
@@ -488,7 +682,21 @@
       // Save commercial preference
       chrome.storage.local.set({ lastCommercial: commercialSelect.value });
 
-      const decidentoContactId = generateContactId(companyData.siren, contactData.name);
+      // Use editable name fields
+      const currentFirstname = firstnameInput.value.trim();
+      const currentLastname = lastnameInput.value.trim();
+      const currentName = (currentFirstname + ' ' + currentLastname).trim();
+      const decidentoContactId = generateContactId(companyData.siren, currentName || contactData.name);
+
+      // Determine email flags depending on context
+      const isRdv = statusSelect.value === 'Rendez-vous pris';
+      const sendConfirmation = isRdv && checkConfirmation.checked;
+      const sendStandaloneEmail = !isRdv && checkSendEmail.checked;
+      const emailTemplate = sendStandaloneEmail ? emailTemplateSelect.value : (sendConfirmation ? 'confirmation_rdv' : '');
+      const sendOfferEmail = sendStandaloneEmail && emailTemplateSelect.value === 'presentation_offre';
+      const sendAppelSansReponse = sendStandaloneEmail && emailTemplateSelect.value === 'appel_sans_reponse';
+      // Brochure: from RDV section OR from standalone email section
+      const selectedBrochure = isRdv ? rdvBrochureSelect.value : (sendOfferEmail ? brochureSelect.value : '');
 
       const payload = {
         timestamp: new Date().toISOString(),
@@ -497,11 +705,18 @@
         decidento_contact_id: decidentoContactId,
         notes: notesInput.value.trim(),
         rdv_date: rdvDateInput.value || '',
-        send_confirmation_email: checkConfirmation.checked,
-        send_offer_email: checkOffer.checked,
+        send_confirmation_email: sendConfirmation,
+        send_offer_email: sendOfferEmail,
+        send_appel_sans_reponse: sendAppelSansReponse,
+        email_template: emailTemplate,
+        offer_brochure: selectedBrochure,
+        rappel_date: statusSelect.value === 'Pas de besoin immédiat - rappel' ? computeRappelDate() : '',
+        rappel_delai: statusSelect.value === 'Pas de besoin immédiat - rappel' ? rappelDelaiSelect.value : '',
         contact: {
-          name: contactData.name || '',
-          position: contactData.position || '',
+          name: currentName || contactData.name || '',
+          firstname: currentFirstname || contactData.firstname || '',
+          lastname: currentLastname || contactData.lastname || '',
+          position: positionInput.value.trim() || contactData.position || '',
           address: contactData.address || '',
           title_tag: contactData.title_tag || '',
           linkedin_url: contactData.linkedin_url || '',
@@ -528,11 +743,9 @@
       };
 
       try {
-        // Get webhook URL from storage or use default
         const { webhookUrl } = await chrome.storage.local.get(['webhookUrl']);
         const url = webhookUrl || WEBHOOK_DEFAULT;
 
-        // Send via background service worker to avoid CORS issues
         const result = await new Promise((resolve, reject) => {
           chrome.runtime.sendMessage(
             { action: 'sendWebhook', url, payload },
@@ -548,11 +761,9 @@
 
         if (result.success) {
           feedbackDiv.className = 'formaxe-feedback formaxe-success';
-          feedbackDiv.textContent = `Envoyé avec succès ! (${contactData.name})`;
-          // Auto-hide form after 2s
+          feedbackDiv.textContent = `Envoyé avec succès ! (${currentName || contactData.name})`;
           setTimeout(() => {
             form.classList.remove('formaxe-visible');
-            // Remove highlight from parent contact bloc
             document.querySelectorAll('.formaxe-highlight').forEach(el => el.classList.remove('formaxe-highlight'));
             feedbackDiv.className = 'formaxe-feedback';
             sendBtn.disabled = false;

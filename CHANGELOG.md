@@ -2,32 +2,44 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [1.6.0] - 2026-03-19
+
+### Ajouté — Extension Chrome
+- **Champs contact éditables** : Prénom, Nom et Poste sont maintenant des inputs modifiables (bordure dashed), permettant de corriger les données avant envoi
+- **Téléphone du contact par défaut** : le champ téléphone est pré-rempli depuis le bouton phone du contact Decidento (`.phone-btn .js-tel a[tcxhref]`), avec fallback sur le standard entreprise
+- **Statut "Pas de besoin immédiat - rappel"** : nouveau statut avec dropdown de délai (1-12 mois ou date personnalisée). Crée une tâche HubSpot "Recontacter ce prospect" à la date calculée avec contexte de l'appel
+- **Email "Appel sans réponse"** : nouveau template email (Mailjet template ID 7854681), style Gmail-like : "J'ai tenté de vous joindre ce jour..." avec présentation Stafy, lien booking
+- **Choix email contextuel** :
+  - Statut "RDV pris" → checkbox "Envoyer mail de confirmation de RDV + présentation" → choix brochure
+  - Autres statuts → checkbox "Envoyer un email" → choix template (présentation offre / appel sans réponse) → brochure si offre
+
+### Modifié
+- **Statut "Email envoyé" retiré** de la liste des statuts
+- **Section email refactorisée** : séparation logique entre les emails liés au RDV et les emails autonomes (offre / appel sans réponse)
+- **Payload webhook enrichi** : nouveaux champs `send_appel_sans_reponse`, `email_template`, `rappel_date`, `rappel_delai`, `contact.firstname`, `contact.lastname`
+- Version extension passe à v1.5.0 (manifest) / v1.6.0 (changelog)
+
+### Ajouté — Template email
+- `email-templates/template-appel-sans-reponse.html` : template Gmail-like pour appels sans réponse, avec variables Mailjet (firstname, company_name, commercial_*, booking_url)
+
 ## [1.5.0] - 2026-03-05
 
 ### Ajouté
-- **Signature dynamique par commercial** : 2 nouveaux nœuds ("Récupérer owner HubSpot" + "Générer signature") remplacent les signatures hardcodées. Le nom et email sont récupérés dynamiquement via l'API HubSpot Owners, complétés par un annuaire interne (titre, téléphone, lien HubSpot Meetings)
+- **Signature dynamique par commercial** : 2 nouveaux nœuds ("Récupérer owner HubSpot" + "Générer signature") remplacent les signatures hardcodées
 - **Templates email Gmail-like** : refonte des templates HTML sans emojis, sans couleurs, style professionnel minimaliste
 
 ### Corrigé
 - **HubSpot 429 rate limit** : ajout `retryOnFail` (3 tentatives, délai 2s) sur tous les HTTP nodes des 3 workflows
-- **Email duplicate 400** : suppression du champ `email` du body PATCH contact (email uniquement transmis sur CREATE)
-- **IF nodes type validation** : `conditions.options.typeValidation` passé de "strict" à "loose" sur 5 nœuds IF
-- **Préparer emails** : mode changé en `runOnceForAllItems` + lecture des données depuis `$('Fusionner contact_id')` au lieu de `$input`
-- **Récupérer owner HubSpot** : URL corrigée pour lire `owner_id` depuis le nœud "Résoudre owner ID"
-- **Mailjet body format** : correction du format body (`sendBody: true`, `specifyBody: json`, `jsonBody`)
-- **Logger CRM** : réécriture du jsonBody en pattern IIFE `={{ (() => { ... })() }}`
-- **Mailjet auth** : passage en `authentication: none` avec headers Authorization manuels (Basic Auth)
+- **Email duplicate 400** : suppression du champ `email` du body PATCH contact
+- **IF nodes type validation** : `conditions.options.typeValidation` passé de "strict" à "loose"
+- **Préparer emails** : mode `runOnceForAllItems` + lecture depuis `$('Fusionner contact_id')`
+- **Récupérer owner HubSpot** : URL corrigée pour lire `owner_id` depuis "Résoudre owner ID"
+- **Mailjet body/auth** : correction format body + passage en auth manuelle par headers
+- **Logger CRM** : jsonBody en pattern IIFE
 
 ### Modifié
-- Nouvelle clé API Mailjet (sous-clé "Automatisations")
-- Expéditeur emails : `contact@stafy.fr`
 - Workflow principal passe de 31 à 33 nœuds
-
-### En attente
-- **Envoi email non fonctionnel** : la sous-clé API Mailjet (`IsMaster: false`) nécessite une validation individuelle des expéditeurs. Les expéditeurs (`contact@stafy.fr`, `info@stafy.fr`, `communication@stafy.io`) restent "Inactive" malgré la validation DNS (SPF + DKIM OK). Solutions possibles :
-  1. Utiliser la clé API maître Mailjet (demander à Kader Belatrache / kb@formaxe.com)
-  2. Configurer les identifiants SMTP du provider email existant (OVH, Google Workspace, etc.) et utiliser le node n8n "Send Email"
-  3. Migrer vers un autre service transactionnel (Brevo, Resend, SendGrid)
+- Envoi Mailjet résolu (clé maître API configurée dans n8n)
 
 ## [1.4.0] - 2026-03-05
 
