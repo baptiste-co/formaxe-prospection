@@ -1,53 +1,159 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!--
-    Template Mailjet : Appel sans réponse
-    Mailjet Template ID : 7854681
-    Style : Gmail-like, naturel, sans emojis ni couleurs
-    Variables Mailjet :
-      {{var:firstname}}          - Prénom du contact
-      {{var:company_name}}       - Nom de l'entreprise du contact
-      {{var:commercial_name}}    - Nom complet du commercial
-      {{var:commercial_title}}   - Titre du commercial
-      {{var:commercial_phone}}   - Téléphone du commercial
-      {{var:commercial_email}}   - Email du commercial
-      {{var:commercial_website}} - Site web
-      {{var:booking_url}}        - Lien HubSpot Meetings du commercial
-  -->
+<meta charset="utf-8" />
+<meta name="x-apple-disable-message-reformatting" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>J'ai tenté de vous joindre</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  body{margin:0;padding:0;background:#F6F6F3;}
+  table{border-spacing:0;border-collapse:collapse;}
+  a{text-decoration:none;}
+  .container{width:640px;max-width:640px;}
+  @media (max-width:650px){
+    .container{width:100%!important;}
+    .mobile-padding{padding:20px!important;}
+    .mobile-center{text-align:center!important;}
+  }
+</style>
 </head>
-<body style="margin:0;padding:0;font-family:Arial,sans-serif;">
-  <div style="font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#222;max-width:600px;">
-
-    <p>Bonjour {{var:firstname}},</p>
-
-    <p>J'ai tenté de vous joindre ce jour par téléphone, malheureusement sans succès.</p>
-
-    <p>Je me permets de vous contacter car je souhaitais vous présenter <b>Stafy</b>, une solution développée par <b>L'Atelier des Experts</b> qui permet aux entreprises comme <b>{{var:company_name}}</b> de proposer à leurs clients des formations professionnelles 100&nbsp;% financées, tout en générant un chiffre d'affaires complémentaire.</p>
-
-    <p>En quelques mots, voici ce que nous mettons en place :</p>
-
-    <p>– Une conseillère formation dédiée pour accompagner vos clients de A à Z<br>
-    – Le montage complet des dossiers de formation, sans charge pour vos équipes<br>
-    – La prise en charge du financement auprès des OPCO<br>
-    – Un renouvellement annuel pour fidéliser vos clients chaque année</p>
-
-    <p>Si le sujet vous intéresse, je serais ravi d'en discuter avec vous lors d'un court échange téléphonique ou en visio.<br>
-    <a href="{{var:booking_url}}" style="color:#1a73e8;text-decoration:none">Réserver un créneau</a></p>
-
-    <p>Bien cordialement,</p>
-
-    <!-- Signature -->
-    <div style="margin-top:24px;padding-top:16px;border-top:1px solid #dadce0;font-size:13px;color:#555;line-height:1.5">
-      <b>{{var:commercial_name}}</b><br>
-      {{var:commercial_title}} | Atelier des Experts©<br>
-      {{var:commercial_phone}}<br>
-      <a href="mailto:{{var:commercial_email}}" style="color:#1a73e8;text-decoration:none">{{var:commercial_email}}</a><br>
-      <a href="https://{{var:commercial_website}}" style="color:#1a73e8;text-decoration:none">{{var:commercial_website}}</a>
-    </div>
-
-  </div>
+<body>
+<table role="presentation" width="100%" bgcolor="#F6F6F3">
+<tr>
+<td align="center" style="padding:20px;">
+<table class="container" bgcolor="#FFFFFF" style="border-radius:12px;overflow:hidden;">
+<!-- HEADER -->
+<tr>
+<td style="background:#FFFFFF;padding:36px 36px 20px;text-align:center;border-bottom:1px solid #EEE;">
+<img src="https://atelierdesexperts.fr/wp-content/uploads/2026/02/logo-formaxe-v2.png" width="200" alt="L'Atelier des Experts" style="display:block;border:0;margin:0 auto 16px;" />
+<p style="margin:0;font-family:'League Spartan',sans-serif;font-size:20px;font-weight:700;color:#08103D;letter-spacing:0.5px;">Suite à mon appel</p>
+</td>
+</tr>
+<!-- CONTENU -->
+<tr>
+<td style="padding:36px 36px 24px 36px;font-family:'Inter',sans-serif;font-size:16px;line-height:26px;color:#08103D;">
+<p style="margin:0 0 16px;">Bonjour {{var:contact_firstname}},</p>
+<p style="margin:0 0 16px;">J'ai tenté de vous joindre ce jour par téléphone, malheureusement sans succès.</p>
+<p style="margin:0 0 16px;">Je me permets de vous contacter car je souhaitais vous présenter <strong>Stafy</strong>, une solution développée par <strong>L'Atelier des Experts</strong> qui permet aux entreprises comme <strong>{{var:company_name}}</strong> de proposer à leurs clients des formations professionnelles 100&nbsp;% financées, tout en générant un chiffre d'affaires complémentaire.</p>
+<p style="margin:0 0 16px;">Voici un récapitulatif de ce que nous mettons en place pour vous et vos clients :</p>
+</td>
+</tr>
+<!-- BLOC AVANTAGES -->
+<tr>
+<td style="padding:0 36px 32px;">
+<table width="100%" style="background:#08103D;border-radius:14px;overflow:hidden;">
+<tr>
+<td style="padding:28px;">
+<p style="margin:0 0 16px;font-family:'Inter',sans-serif;font-size:16px;font-weight:600;color:#25D1AB;text-transform:uppercase;letter-spacing:1px;text-align:center;"><strong>Ce que nous mettons en place</strong></p>
+<p style="margin:0 0 10px;font-family:'Inter',sans-serif;font-size:16px;color:#FFFFFF;">✓ Une <strong>conseillère formation dédiée</strong> pour accompagner vos clients de A à Z</p>
+<p style="margin:0 0 10px;font-family:'Inter',sans-serif;font-size:16px;color:#FFFFFF;">✓ Un <strong>accompagnement au closing client</strong> pour maximiser vos conversions</p>
+<p style="margin:0 0 10px;font-family:'Inter',sans-serif;font-size:16px;color:#FFFFFF;">✓ Le <strong>montage complet des dossiers</strong> de formation, sans charge pour vos équipes</p>
+<p style="margin:0 0 10px;font-family:'Inter',sans-serif;font-size:16px;color:#FFFFFF;">✓ La <strong>prise en charge du financement</strong> auprès des OPCO</p>
+<p style="margin:0 0 10px;font-family:'Inter',sans-serif;font-size:16px;color:#FFFFFF;">✓ Une <strong>avance de trésorerie à 45 jours</strong> pour sécuriser votre cash flow</p>
+<p style="margin:0;font-family:'Inter',sans-serif;font-size:16px;color:#FFFFFF;">✓ Un <strong>renouvellement automatique annuel</strong> pour fidéliser vos clients chaque année</p>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<!-- CTA BOOKING -->
+<tr>
+<td align="center" style="padding:0 36px 32px;">
+<table cellpadding="0" cellspacing="0" style="margin:0 auto;">
+<tr>
+<td align="center" style="background:#25D1AB;border-radius:8px;">
+<a href="{{var:booking_url}}" target="_blank" style="display:inline-block;padding:16px 40px;font-family:'Inter',sans-serif;font-size:16px;font-weight:700;color:#FFFFFF;text-decoration:none;letter-spacing:0.5px;">Réserver un créneau d'échange ↗</a>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<!-- BLOC RAPPEL -->
+<tr>
+<td style="padding:0 36px 32px;">
+<table width="100%" style="background:#EAF7F5;border-left:4px solid #25D1AB;border-radius:0 8px 8px 0;">
+<tr>
+<td style="padding:20px 24px;">
+<p style="margin:0 0 8px;font-family:'Inter',sans-serif;font-size:16px;font-weight:600;line-height:24px;color:#08103D;">Si le sujet vous intéresse :</p>
+<p style="margin:0 0 8px;font-family:'Inter',sans-serif;font-size:16px;line-height:24px;color:#08103D;">1. Réservez un <strong>créneau de 15 minutes</strong> pour un échange rapide</p>
+<p style="margin:0;font-family:'Inter',sans-serif;font-size:16px;line-height:24px;color:#08103D;">2. Je vous présenterai concrètement comment <strong>Stafy</strong> peut générer du CA supplémentaire pour votre activité</p>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<!-- SALUTATION + SIGNATURE -->
+<tr>
+<td style="padding:0 36px 32px;font-family:'Inter',sans-serif;font-size:16px;line-height:26px;color:#08103D;">
+<p style="margin:0 0 20px;">Bien cordialement,</p>
+<table width="100%" style="border-top:1px solid #EEE;">
+<tr>
+<td style="padding:20px 0 0;font-family:'Inter',sans-serif;font-size:13px;color:#555555;line-height:1.6;">
+<p style="margin:0 0 4px;font-weight:700;color:#08103D;font-size:15px;">{{var:commercial_name}}</p>
+<p style="margin:0 0 4px;">{{var:commercial_title}} | Atelier des Experts</p>
+<p style="margin:0 0 4px;">{{var:commercial_phone}}</p>
+<p style="margin:0 0 4px;color:#1a73e8;">{{var:commercial_email}}</p>
+<p style="margin:0;color:#1a73e8;">{{var:commercial_website}}</p>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<!-- KPIs -->
+<tr>
+<td style="padding:0 36px 32px;">
+<table width="100%" bgcolor="#F6F6F3" style="border-radius:14px;">
+<tr>
+<td style="padding:24px 12px;text-align:center;">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+<td width="25%" align="center" style="padding:8px;">
+<p style="margin:0;font-family:'League Spartan',sans-serif;font-size:28px;font-weight:700;color:#25D1AB;">10</p>
+<p style="margin:4px 0 0;font-family:'Inter',sans-serif;font-size:10px;font-weight:600;color:#08103D;text-transform:uppercase;letter-spacing:0.3px;">ans d'expérience</p>
+</td>
+<td width="25%" align="center" style="padding:8px;">
+<p style="margin:0;font-family:'League Spartan',sans-serif;font-size:28px;font-weight:700;color:#25D1AB;">12500+</p>
+<p style="margin:4px 0 0;font-family:'Inter',sans-serif;font-size:10px;font-weight:600;color:#08103D;text-transform:uppercase;letter-spacing:0.3px;">clients formés</p>
+</td>
+<td width="25%" align="center" style="padding:8px;">
+<p style="margin:0;font-family:'League Spartan',sans-serif;font-size:28px;font-weight:700;color:#25D1AB;">30</p>
+<p style="margin:4px 0 0;font-family:'Inter',sans-serif;font-size:10px;font-weight:600;color:#08103D;text-transform:uppercase;letter-spacing:0.3px;">collaborateurs</p>
+</td>
+<td width="25%" align="center" style="padding:8px;">
+<p style="margin:0;font-family:'League Spartan',sans-serif;font-size:28px;font-weight:700;color:#25D1AB;">100%</p>
+<p style="margin:4px 0 0;font-family:'Inter',sans-serif;font-size:10px;font-weight:600;color:#08103D;text-transform:uppercase;letter-spacing:0.3px;">France entière</p>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<!-- BANNIERE -->
+<tr>
+<td align="center" style="padding:0 36px 32px;">
+<img src="https://formaxe.com/wp-content/uploads/2024/04/banniere-site.png" width="568" alt="Certifications et Clients" style="display:block;border:0;max-width:100%;height:auto;border-radius:8px;" />
+</td>
+</tr>
+<!-- CARTE FRANCE -->
+<tr>
+<td align="center" style="padding:0 36px 32px;">
+<p style="margin:0 0 12px;font-family:'League Spartan',sans-serif;font-size:18px;font-weight:700;color:#08103D;">L'Atelier des Experts — Partout en France</p>
+<img src="https://atelierdesexperts.fr/wp-content/uploads/2026/01/carte-france-formaxe.png" width="260" alt="Carte France" style="display:block;border:0;max-width:100%;height:auto;margin:0 auto;" />
+</td>
+</tr>
+<!-- FOOTER -->
+<tr>
+<td style="padding:28px 36px;background:#08103D;text-align:center;">
+<p style="margin:0 0 16px;font-family:'Inter',sans-serif;font-size:13px;color:#FFFFFF;"><strong>www.atelierdesexperts.fr</strong><br />9 Chaussée Jules César, 95520 Osny<br />Tél : 01 84 75 47 20</p>
+<p style="margin:0;font-family:'Inter',sans-serif;font-size:11px;color:#666;"><a href="[[UNSUB_LINK_FR]]" style="color:#888;text-decoration:underline;">Se désabonner</a></p>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
 </body>
 </html>
