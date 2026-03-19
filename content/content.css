@@ -417,14 +417,19 @@
 
 /* ── Brochure dropdown (appears when presentation offre is selected) ── */
 .formaxe-brochure-select-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
+  display: block !important;
+  width: 100%;
+}
+
+.formaxe-brochure-select-wrapper .formaxe-form-label {
+  display: block;
+  margin-bottom: 4px;
 }
 
 .formaxe-brochure-select-wrapper .formaxe-form-select {
+  display: block;
   width: 100%;
-  max-width: 320px;
+  max-width: 100%;
 }
 
 @keyframes formaxeOptionsFadeIn {
