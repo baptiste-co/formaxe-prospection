@@ -2,6 +2,32 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [1.7.0] - 2026-03-19
+
+### Ajouté — Workflow n8n (40 nodes)
+- **Email "Appel sans réponse"** : nouveau circuit complet dans n8n (IF node → Envoi Mailjet → Logger CRM). Utilise email3_subject/html/text avec présentation Stafy + lien booking dynamique
+- **Tâche HubSpot "Recontacter ce prospect"** : pour le statut "Pas de besoin immédiat - rappel", crée une tâche HubSpot à la date calculée (1-12 mois ou custom) avec corps contextuel :
+  - Date de l'appel initial
+  - Notes de l'appel
+  - Délai prévu
+  - Priorité HIGH (vs MEDIUM pour les rappels J+3 classiques)
+- **Champs éditables pris en charge** : `contact.firstname` et `contact.lastname` envoyés directement par l'extension (plus de split nom côté n8n)
+- **Nouveaux champs webhook** : `send_appel_sans_reponse`, `email_template`, `rappel_date`, `rappel_delai`
+
+### Modifié — Workflow n8n
+- **"Préparer les données"** : utilise firstname/lastname de l'extension, nouveau statut dans statusMap/stageMap
+- **"Tâche rappel ?"** : condition élargie à `pas_de_besoin_immediat_rappel`
+- **"Créer tâche rappel"** (ex J+3) : date dynamique selon rappel_date, corps contextuel selon le type de rappel
+- **"Préparer emails"** : génère 3 emails (confirmation, offre, appel sans réponse)
+- **"Générer signature"** : connecté aux 3 branches email (confirmation, offre, appel sans réponse)
+- Workflow passe de 37 à 40 nodes
+
+### Modifié — Extension Chrome
+- Logo Stafy ajouté (popup + formulaire inline)
+- Fond formulaire jaune clair (#fef9e7) pour mieux se distinguer du site
+- Webhook URL retiré du formulaire (uniquement dans Options)
+- Version popup v1.6.0
+
 ## [1.6.0] - 2026-03-19
 
 ### Ajouté — Extension Chrome
