@@ -509,23 +509,21 @@
           </label>
         </div>
         <div class="formaxe-email-options-wrapper" style="display:none;">
-          <div class="formaxe-form-row formaxe-form-row-fields">
-            <div class="formaxe-form-group">
-              <label class="formaxe-form-label">Type d'email</label>
-              <select class="formaxe-form-select formaxe-select-email-template">
-                ${EMAIL_TEMPLATE_OPTIONS.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}
-              </select>
-            </div>
-            <div class="formaxe-form-group formaxe-brochure-select-wrapper" style="display:none;">
-              <label class="formaxe-form-label">Pièce jointe</label>
-              <select class="formaxe-form-select formaxe-select-brochure">
-                <option value="">-- Choisir une brochure --</option>
-                <option value="brochure_generique">Brochure générique</option>
-                <option value="brochure_agence_web">Brochure agence web</option>
-                <option value="brochure_expert_comptable">Brochure expert comptable</option>
-                <option value="brochure_esn">Brochure ESN</option>
-              </select>
-            </div>
+          <div class="formaxe-form-group">
+            <label class="formaxe-form-label">Type d'email</label>
+            <select class="formaxe-form-select formaxe-select-email-template">
+              ${EMAIL_TEMPLATE_OPTIONS.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}
+            </select>
+          </div>
+          <div class="formaxe-form-group formaxe-brochure-select-wrapper" style="display:none;">
+            <label class="formaxe-form-label">Pièce jointe</label>
+            <select class="formaxe-form-select formaxe-select-brochure">
+              <option value="">-- Choisir une brochure --</option>
+              <option value="brochure_generique">Brochure générique</option>
+              <option value="brochure_agence_web">Brochure agence web</option>
+              <option value="brochure_expert_comptable">Brochure expert comptable</option>
+              <option value="brochure_esn">Brochure ESN</option>
+            </select>
           </div>
         </div>
       </div>
